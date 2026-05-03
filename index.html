@@ -5,22 +5,258 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ChargeGuard - WooCommerce Card Testing Prevention</title>
     <style>
-        body { font-family: Arial, sans-serif; background: #0f172a; color: #e2e8f0; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; text-align: center; }
-        h1 { font-size: 3rem; color: #f97316; margin-bottom: 0; }
-        p { max-width: 600px; font-size: 1.2rem; line-height: 1.8; }
-        .btn { background: #f97316; color: #fff; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block; margin: 20px; }
-        .footer { margin-top: 50px; font-size: 0.8rem; color: #64748b; }
-        .footer a { color: #94a3b8; }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            text-align: center;
+            line-height: 1.6;
+        }
+        .container { max-width: 650px; }
+        h1 {
+            font-size: clamp(2.2rem, 6vw, 3.4rem);
+            color: #f97316;
+            margin-bottom: 0.1em;
+            letter-spacing: -0.02em;
+        }
+        .subtitle {
+            font-size: 1.25rem;
+            color: #94a3b8;
+            margin-bottom: 2rem;
+        }
+        .description {
+            max-width: 600px;
+            margin: 0 auto 2rem;
+            font-size: 1.1rem;
+            color: #cbd5e1;
+        }
+        .card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+        }
+        .form-group {
+            margin-bottom: 1.2rem;
+            text-align: left;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.4rem;
+            font-weight: 600;
+            color: #e2e8f0;
+            font-size: 0.95rem;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #475569;
+            border-radius: 10px;
+            background: #0f172a;
+            color: #e2e8f0;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #f97316;
+        }
+        .optional { color: #64748b; font-weight: normal; font-size: 0.9rem; }
+        .btn {
+            background: #f97316;
+            color: #fff;
+            padding: 14px 32px;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background 0.2s, opacity 0.2s;
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+        .btn:hover { background: #ea580c; }
+        .btn:disabled { background: #64748b; cursor: not-allowed; opacity: 0.7; }
+        .message {
+            margin-top: 1.2rem;
+            padding: 14px 18px;
+            border-radius: 10px;
+            font-weight: 500;
+            display: none;
+            text-align: left;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+        .message.success {
+            display: block;
+            background: #064e3b;
+            border: 1px solid #065f46;
+            color: #a7f3d0;
+        }
+        .message.error {
+            display: block;
+            background: #450a0a;
+            border: 1px solid #7f1d1d;
+            color: #fecaca;
+        }
+        .message.info {
+            display: block;
+            background: #1e3a5f;
+            border: 1px solid #1d4ed8;
+            color: #bfdbfe;
+        }
+        .api-key-box {
+            background: #0f172a;
+            border: 2px dashed #f97316;
+            border-radius: 10px;
+            padding: 18px;
+            margin: 1rem 0;
+            word-break: break-all;
+            font-family: 'Fira Code', 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: #f97316;
+            text-align: center;
+            user-select: all;
+        }
+        .steps {
+            text-align: left;
+            margin-top: 1.5rem;
+            list-style-position: inside;
+            padding-left: 0;
+        }
+        .steps li {
+            margin-bottom: 0.8rem;
+            font-size: 0.95rem;
+        }
+        .footer {
+            margin-top: 3rem;
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+        .footer a { color: #94a3b8; text-decoration: none; }
+        .footer a:hover { color: #f97316; }
     </style>
 </head>
 <body>
-    <h1>ChargeGuard</h1>
-    <p>Stop automated card testing bots from draining your wallet and trashing your WooCommerce store's database. Real-time fraud prevention at the checkout level.</p>
-    <a class="btn" href="mailto:support@chargeguard.app?subject=Early Access Request">Join Early Access (Free)</a>
-    <p style="font-size:0.9rem;">Looking for 10 WooCommerce store owners. Get 3 months free.</p>
-    <div class="footer">
-        <a href="/terms">Terms of Service</a> | <a href="/privacy">Privacy Policy</a><br>
-        &copy; 2026 ChargeGuard
+    <div class="container">
+        <h1>ChargeGuard</h1>
+        <p class="subtitle">Stop Card Testing. Instantly.</p>
+        <p class="description">
+            Automated bots are hammering WooCommerce stores with stolen credit cards,
+            racking up payment gateway fees and trashing your database.
+            ChargeGuard stops them in real‑time — before an order is created.
+        </p>
+
+        <div class="card" id="register-card">
+            <h2 style="color:#f97316; margin-bottom:1rem;">Get Early Access (Free)</h2>
+            <p style="margin-bottom:1.5rem; color:#94a3b8;">Join 10 WooCommerce store owners. Get 3 months free.</p>
+            <form id="register-form">
+                <div class="form-group">
+                    <label for="email">Email <span style="color:#ef4444;">*</span></label>
+                    <input type="email" id="email" name="email" placeholder="you@yourstore.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="storeUrl">Store URL <span class="optional">(optional)</span></label>
+                    <input type="url" id="storeUrl" name="storeUrl" placeholder="https://yourstore.com">
+                </div>
+                <button type="submit" class="btn" id="submit-btn">Get My Free API Key</button>
+            </form>
+            <div class="message" id="message"></div>
+            <div id="result" style="display:none;">
+                <h3 style="color:#f97316; margin:1.5rem 0 0.5rem;">🔑 Your API Key</h3>
+                <div class="api-key-box" id="api-key-display"></div>
+                <p style="color:#94a3b8; font-size:0.85rem;">Copy this key now. You won't see it again.</p>
+                <h3 style="color:#f97316; margin:1.5rem 0 0.5rem;">📋 Next Steps</h3>
+                <ol class="steps">
+                    <li><strong>Install the plugin</strong> – Download <code>chargeguard-1.0.0.zip</code> and upload it to your WordPress site (<em>Plugins &rarr; Add New &rarr; Upload</em>).</li>
+                    <li><strong>Enter the API key</strong> – Go to <em>WooCommerce &rarr; Settings &rarr; ChargeGuard</em> and paste the key above.</li>
+                    <li><strong>You're protected!</strong> The firewall is now active and will block card testing attacks automatically.</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="footer">
+            <a href="privacy.html">Privacy Policy</a> &nbsp;|&nbsp;
+            <a href="terms.html">Terms of Service</a>
+            <br>
+            &copy; 2026 ChargeGuard
+        </div>
     </div>
+
+    <script>
+        (function() {
+            const API_REGISTER_URL = 'https://Amr453-chargeguard-space.hf.space/api/risk/tenants/register';
+
+            const form = document.getElementById('register-form');
+            const submitBtn = document.getElementById('submit-btn');
+            const messageEl = document.getElementById('message');
+            const resultEl = document.getElementById('result');
+            const apiKeyDisplay = document.getElementById('api-key-display');
+
+            function showMessage(text, type) {
+                messageEl.textContent = text;
+                messageEl.className = 'message ' + type;
+                messageEl.style.display = 'block';
+            }
+
+            function hideMessage() {
+                messageEl.style.display = 'none';
+                messageEl.className = 'message';
+            }
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                hideMessage();
+                resultEl.style.display = 'none';
+
+                const email = document.getElementById('email').value.trim();
+                const storeUrl = document.getElementById('storeUrl').value.trim();
+
+                if (!email || !email.includes('@')) {
+                    showMessage('Please enter a valid email address.', 'error');
+                    return;
+                }
+
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Generating your API key...';
+                showMessage('Connecting to ChargeGuard...', 'info');
+
+                try {
+                    const response = await fetch(API_REGISTER_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email: email, storeUrl: storeUrl || null })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        apiKeyDisplay.textContent = data.apiKey;
+                        resultEl.style.display = 'block';
+                        showMessage('Success! Your API key is ready.', 'success');
+                        form.style.display = 'none';
+                    } else {
+                        showMessage(data.error || 'Registration failed. Please try again.', 'error');
+                    }
+                } catch (err) {
+                    showMessage('Could not reach the ChargeGuard server. Please try again later.', 'error');
+                    console.error('Registration error:', err);
+                } finally {
+                    setTimeout(() => {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Get My Free API Key';
+                    }, 10000);
+                }
+            });
+        })();
+    </script>
 </body>
 </html>
