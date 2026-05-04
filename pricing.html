@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing - ChargeGuard</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #0f172a; color: #e2e8f0; margin: 0; padding: 0; }
+        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid #334155; position: sticky; top: 0; z-index: 1000; }
+        .nav-brand .nav-logo { font-size: 1.5rem; font-weight: bold; color: #f97316; text-decoration: none; }
+        .nav-links { display: flex; list-style: none; gap: 1.5rem; align-items: center; margin: 0; padding: 0; }
+        .nav-links a { color: #e2e8f0; text-decoration: none; font-weight: 500; transition: color 0.3s ease; }
+        .nav-links a:hover { color: #f97316; }
+        .nav-cta { background: #f97316; padding: 0.5rem 1rem; border-radius: 8px; color: #fff !important; }
+        .nav-toggle { display: none; background: none; border: none; cursor: pointer; }
+        .hamburger { display: block; width: 25px; height: 3px; background: #e2e8f0; position: relative; }
+        .hamburger::before, .hamburger::after { content: ''; display: block; width: 25px; height: 3px; background: #e2e8f0; position: absolute; left: 0; }
+        .hamburger::before { top: -8px; } .hamburger::after { top: 8px; }
+        @media (max-width: 768px) { .nav-links { display: none; flex-direction: column; position: absolute; top: 100%; left: 0; width: 100%; background: #1e293b; padding: 1rem; } .nav-links.active { display: flex; } .nav-toggle { display: block; } }
+        .container { max-width: 800px; margin: 4rem auto; padding: 0 2rem; text-align: center; }
+        .card { background: #1e293b; border: 2px solid #f97316; border-radius: 16px; padding: 3rem; max-width: 400px; margin: 2rem auto; }
+        .price { font-size: 3rem; color: #f97316; font-weight: bold; }
+        .btn { background: #f97316; color: #fff; padding: 14px 32px; border: none; border-radius: 10px; font-size: 1.1rem; cursor: pointer; text-decoration: none; display: inline-block; margin-top: 1rem; }
+        .footer { text-align: center; padding: 2rem; color: #64748b; border-top: 1px solid #334155; margin-top: 4rem; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand"><a href="index.html" class="nav-logo">ChargeGuard</a></div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="features.html">Features</a></li>
+            <li><a href="pricing.html">Pricing</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="index.html#register-card" class="nav-cta">Get Early Access</a></li>
+        </ul>
+        <button class="nav-toggle" aria-label="Toggle navigation"><span class="hamburger"></span></button>
+    </nav>
+    <div class="container">
+        <h1 style="color:#f97316; font-size:2.5rem;">Simple Pricing</h1>
+        <div class="card">
+            <h2>Early Access</h2>
+            <div class="price">Free</div>
+            <p>For the first 10 WooCommerce stores</p>
+            <ul style="text-align:left; list-style:none; padding:0;">
+                <li>✓ Real-time Card Testing Prevention</li>
+                <li>✓ Store API Protection</li>
+                <li>✓ AI-Powered Risk Scoring</li>
+                <li>✓ Automatic Attacker Blacklisting</li>
+                <li>✓ Email & IP Intelligence</li>
+                <li>✓ Priority Support</li>
+            </ul>
+            <a href="index.html#register-card" class="btn">Get Started Free</a>
+        </div>
+    </div>
+    <div class="footer">
+        <a href="privacy.html">Privacy Policy</a> | <a href="terms.html">Terms of Service</a><br>&copy; 2026 ChargeGuard
+    </div>
+    <script>
+        const navToggle = document.querySelector('.nav-toggle');
+        const navLinks = document.querySelector('.nav-links');
+        navToggle.addEventListener('click', () => { navLinks.classList.toggle('active'); });
+    </script>
+</body>
+</html>
