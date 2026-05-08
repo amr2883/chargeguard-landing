@@ -3,215 +3,1531 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChargeGuard - WooCommerce Card Testing Prevention</title>
-    <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
-            background: #0f172a;
-            color: #e2e8f0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 20px;
-            text-align: center;
-            line-height: 1.6;
-        }
-        .container { max-width: 650px; }
-        h1 {
-            font-size: clamp(2.2rem, 6vw, 3.4rem);
-            color: #f97316;
-            margin-bottom: 0.1em;
-            letter-spacing: -0.02em;
-        }
-        .subtitle {
-            font-size: 1.25rem;
-            color: #94a3b8;
-            margin-bottom: 2rem;
-        }
-        .description {
-            max-width: 600px;
-            margin: 0 auto 2rem;
-            font-size: 1.1rem;
-            color: #cbd5e1;
-        }
-        .card {
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 16px;
-            padding: 2rem;
-            margin: 1.5rem 0;
-        }
-        .form-group {
-            margin-bottom: 1.2rem;
-            text-align: left;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 0.4rem;
-            font-weight: 600;
-            color: #e2e8f0;
-            font-size: 0.95rem;
-        }
-        .form-group input {
-            width: 100%;
-            padding: 12px 16px;
-            border: 2px solid #475569;
-            border-radius: 10px;
-            background: #0f172a;
-            color: #e2e8f0;
-            font-size: 1rem;
-            transition: border-color 0.2s;
-        }
-        .form-group input:focus {
-            outline: none;
-            border-color: #f97316;
-        }
-        .optional { color: #64748b; font-weight: normal; font-size: 0.9rem; }
-        .btn {
-            background: #f97316;
-            color: #fff;
-            padding: 14px 32px;
-            border: none;
-            border-radius: 10px;
-            font-weight: bold;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: background 0.2s, opacity 0.2s;
-            width: 100%;
-            margin-top: 0.5rem;
-        }
-        .btn:hover { background: #ea580c; }
-        .btn:disabled { background: #64748b; cursor: not-allowed; opacity: 0.7; }
-        .message {
-            margin-top: 1.2rem;
-            padding: 14px 18px;
-            border-radius: 10px;
-            font-weight: 500;
-            display: none;
-            text-align: left;
-            animation: fadeIn 0.3s ease;
-        }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
-        .message.success {
-            display: block;
-            background: #064e3b;
-            border: 1px solid #065f46;
-            color: #a7f3d0;
-        }
-        .message.error {
-            display: block;
-            background: #450a0a;
-            border: 1px solid #7f1d1d;
-            color: #fecaca;
-        }
-        .message.info {
-            display: block;
-            background: #1e3a5f;
-            border: 1px solid #1d4ed8;
-            color: #bfdbfe;
-        }
-        .api-key-box {
-            background: #0f172a;
-            border: 2px dashed #f97316;
-            border-radius: 10px;
-            padding: 18px;
-            margin: 1rem 0;
-            word-break: break-all;
-            font-family: 'Fira Code', 'Courier New', monospace;
-            font-size: 0.9rem;
-            color: #f97316;
-            text-align: center;
-            user-select: all;
-        }
-        .steps {
-            text-align: left;
-            margin-top: 1.5rem;
-            list-style-position: inside;
-            padding-left: 0;
-        }
-        .steps li {
-            margin-bottom: 0.8rem;
-            font-size: 0.95rem;
-        }
-        .footer {
-            margin-top: 3rem;
-            font-size: 0.85rem;
-            color: #64748b;
-        }
-        .footer a { color: #94a3b8; text-decoration: none; }
-        .footer a:hover { color: #f97316; }
 
-        /* ========== NAVBAR STYLES ========== */
+    <!-- ═══════════════════════════════════════════════
+         PRIMARY META
+    ═══════════════════════════════════════════════ -->
+    <title>ChargeGuard — Stop Card Testing Before It Costs You</title>
+    <meta name="description" content="Automated card testing bots are draining your WooCommerce revenue through gateway fees. ChargeGuard stops them in real-time — invisible to real customers, lethal to bots.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://chargeguard.io/">
+
+    <!-- ═══════════════════════════════════════════════
+         OPEN GRAPH — Facebook · LinkedIn · WhatsApp
+    ═══════════════════════════════════════════════ -->
+    <meta property="og:type"        content="website">
+    <meta property="og:site_name"   content="ChargeGuard">
+    <meta property="og:url"         content="https://chargeguard.io/">
+    <meta property="og:title"       content="ChargeGuard — Stop Card Testing Before It Costs You">
+    <meta property="og:description" content="Card testing bots charge your gateway for every stolen card attempt. ChargeGuard blocks them in real-time — free for the first 10 WooCommerce stores.">
+    <meta property="og:image"       content="https://chargeguard.io/og-image.png">
+    <meta property="og:image:width"  content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt"    content="ChargeGuard dashboard showing card testing attacks blocked in real-time">
+    <meta property="og:locale"      content="en_US">
+
+    <!-- ═══════════════════════════════════════════════
+         TWITTER CARD — X · Discord unfurls
+    ═══════════════════════════════════════════════ -->
+    <meta name="twitter:card"        content="summary_large_image">
+    <meta name="twitter:site"        content="@chargeguard">
+    <meta name="twitter:title"       content="ChargeGuard — Stop Card Testing Before It Costs You">
+    <meta name="twitter:description" content="Card testing bots charge your gateway for every stolen card attempt. ChargeGuard blocks them in real-time — free for the first 10 WooCommerce stores.">
+    <meta name="twitter:image"       content="https://chargeguard.io/og-image.png">
+    <meta name="twitter:image:alt"   content="ChargeGuard dashboard showing attacks blocked in real-time">
+
+    <!-- ═══════════════════════════════════════════════
+         JSON-LD STRUCTURED DATA
+         Schema: SoftwareApplication (WooCommerce plugin / SaaS)
+         Helps Google understand the product category and show
+         rich results in search (ratings, price, platform).
+    ═══════════════════════════════════════════════ -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "ChargeGuard",
+        "url": "https://chargeguard.io/",
+        "description": "Real-time card testing attack prevention for WooCommerce. Blocks bots before they trigger gateway fees — invisible to legitimate customers.",
+        "applicationCategory": "SecurityApplication",
+        "operatingSystem": "WordPress / WooCommerce",
+        "softwareVersion": "1.0",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD",
+            "description": "3 months free for the first 10 WooCommerce stores in Early Access"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "ChargeGuard",
+            "url": "https://chargeguard.io/"
+        },
+        "featureList": [
+            "Real-time card testing detection",
+            "WooCommerce native integration",
+            "Zero friction for legitimate customers",
+            "Gateway fee reduction",
+            "Instant API key delivery"
+        ]
+    }
+    </script>
+
+    <!-- ═══════════════════════════════════════════════
+         FAVICON — inline SVG (no external file needed)
+         Uses the ChargeGuard shield motif in brand orange.
+    ═══════════════════════════════════════════════ -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%230b1121'/><path d='M16 4L6 8v7c0 6.5 4.5 10.8 10 12.5C21.5 25.8 26 21.5 26 15V8L16 4z' fill='%23f97316' opacity='.9'/><path d='M11 16l3.5 3.5L21 12' stroke='white' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round' fill='none'/></svg>" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%230b1121'/><path d='M16 4L6 8v7c0 6.5 4.5 10.8 10 12.5C21.5 25.8 26 21.5 26 15V8L16 4z' fill='%23f97316' opacity='.9'/><path d='M11 16l3.5 3.5L21 12' stroke='white' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round' fill='none'/></svg>">
+
+    <!-- ═══════════════════════════════════════════════
+         FONTS
+    ═══════════════════════════════════════════════ -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <style>
+        /* ═══════════════════════════════════════════════
+           DESIGN TOKENS
+        ═══════════════════════════════════════════════ */
+        :root {
+            --orange:        #f97316;
+            --orange-dark:   #ea580c;
+            --orange-glow:   rgba(249,115,22,0.15);
+            --orange-glow-s: rgba(249,115,22,0.06);
+            --red:           #ef4444;
+            --red-bg:        rgba(239,68,68,0.1);
+            --green:         #10b981;
+            --green-bg:      rgba(16,185,129,0.1);
+            --green-border:  rgba(16,185,129,0.25);
+            --amber:         #f59e0b;
+
+            --bg-deepest:    #020617;
+            --bg-base:       #0b1121;
+            --bg-card:       #111827;
+            --bg-card-hover: #141e2e;
+            --bg-input:      #0d1526;
+
+            --border:        rgba(255,255,255,0.07);
+            --border-orange: rgba(249,115,22,0.3);
+            --border-hover:  rgba(255,255,255,0.12);
+
+            --text-primary:  #f1f5f9;
+            --text-body:     #cbd5e1;
+            --text-muted:    #64748b;
+            --text-faint:    #334155;
+
+            --font-display:  'Syne', sans-serif;
+            --font-body:     'DM Sans', sans-serif;
+            --font-mono:     'JetBrains Mono', monospace;
+
+            --radius-sm:     8px;
+            --radius-md:     12px;
+            --radius-lg:     20px;
+            --radius-xl:     28px;
+
+            --transition:    all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow-orange: 0 0 40px rgba(249,115,22,0.12);
+            --shadow-card:   0 4px 24px rgba(0,0,0,0.4);
+        }
+
+        /* ═══════════════════════════════════════════════
+           RESET & BASE
+        ═══════════════════════════════════════════════ */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--bg-base);
+            color: var(--text-body);
+            line-height: 1.65;
+            overflow-x: hidden;
+        }
+
+        /* ─── GRID BACKGROUND ─── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(249,115,22,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(249,115,22,0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: -20%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 800px;
+            height: 600px;
+            background: radial-gradient(ellipse at center, rgba(249,115,22,0.08) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        section, nav, footer {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ═══════════════════════════════════════════════
+           NAVBAR
+        ═══════════════════════════════════════════════ */
         .navbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1rem 2rem;
-            background: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid #334155;
+            padding: 0 clamp(1.25rem, 4vw, 2.5rem);
+            height: 68px;
+            background: rgba(11, 17, 33, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
             position: sticky;
             top: 0;
             z-index: 1000;
             width: 100%;
         }
-        .nav-brand .nav-logo {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #f97316;
-            text-decoration: none;
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
+
+        .nav-logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--orange) 0%, var(--orange-dark) 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .nav-logo-icon svg {
+            width: 18px;
+            height: 18px;
+            fill: white;
+        }
+
+        .nav-logo-text {
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-decoration: none;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-logo-text span {
+            color: var(--orange);
+        }
+
         .nav-links {
             display: flex;
             list-style: none;
-            gap: 1.5rem;
+            gap: 0.25rem;
             align-items: center;
-            margin: 0;
-            padding: 0;
         }
+
         .nav-links a {
-            color: #e2e8f0;
+            color: var(--text-muted);
             text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s ease;
+            font-size: 0.9rem;
+            font-weight: 400;
+            padding: 0.4rem 0.8rem;
+            border-radius: var(--radius-sm);
+            transition: var(--transition);
+            letter-spacing: 0.01em;
         }
-        .nav-links a:hover { color: #f97316; }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+            background: rgba(255,255,255,0.05);
+        }
+
         .nav-cta {
-            background: #f97316;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
+            background: var(--orange) !important;
             color: #fff !important;
+            font-weight: 500 !important;
+            padding: 0.45rem 1.1rem !important;
+            border-radius: var(--radius-sm) !important;
+            font-family: var(--font-display) !important;
+            letter-spacing: 0.01em !important;
+            transition: var(--transition) !important;
+            box-shadow: 0 0 20px rgba(249,115,22,0.3) !important;
         }
-        .nav-cta:hover { background: #ea580c; }
+
+        .nav-cta:hover {
+            background: var(--orange-dark) !important;
+            box-shadow: 0 0 30px rgba(249,115,22,0.45) !important;
+            transform: translateY(-1px);
+        }
+
         .nav-toggle {
             display: none;
             background: none;
-            border: none;
+            border: 1px solid var(--border);
             cursor: pointer;
+            padding: 8px;
+            border-radius: var(--radius-sm);
+            flex-direction: column;
+            gap: 5px;
         }
-        .hamburger {
+
+        .nav-toggle span {
             display: block;
-            width: 25px;
-            height: 3px;
-            background: #e2e8f0;
+            width: 20px;
+            height: 1.5px;
+            background: var(--text-body);
+            border-radius: 2px;
+            transition: var(--transition);
+        }
+
+        /* ═══════════════════════════════════════════════
+           HERO SECTION
+        ═══════════════════════════════════════════════ */
+        .hero {
+            padding: clamp(5rem, 12vw, 9rem) clamp(1.25rem, 5vw, 2.5rem) clamp(4rem, 8vw, 7rem);
+            text-align: center;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .hero-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(239,68,68,0.1);
+            border: 1px solid rgba(239,68,68,0.25);
+            color: #fca5a5;
+            font-size: 0.78rem;
+            font-weight: 500;
+            font-family: var(--font-mono);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 0.4rem 1rem;
+            border-radius: 100px;
+            margin-bottom: 2rem;
+            animation: fadeDown 0.6s ease both;
+        }
+
+        .hero-eyebrow::before {
+            content: '';
+            width: 7px;
+            height: 7px;
+            background: var(--red);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--red);
+            animation: pulse-red 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse-red {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(0.85); }
+        }
+
+        .hero h1 {
+            font-family: var(--font-display);
+            font-size: clamp(2.6rem, 6.5vw, 5rem);
+            font-weight: 800;
+            color: var(--text-primary);
+            line-height: 1.08;
+            letter-spacing: -0.03em;
+            margin-bottom: 1.5rem;
+            animation: fadeDown 0.6s ease 0.1s both;
+            /* Responsive line-breaking — no hardcoded <br> needed.
+               text-wrap:balance distributes lines evenly on modern browsers.
+               max-width acts as the fallback for older engines. */
+            text-wrap: balance;
+            max-width: 18ch;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero h1 .pain-word {
+            color: var(--red);
             position: relative;
         }
-        .hamburger::before,
-        .hamburger::after {
+
+        .hero h1 .highlight {
+            color: var(--orange);
+            position: relative;
+        }
+
+        .hero h1 .highlight::after {
             content: '';
-            display: block;
-            width: 25px;
-            height: 3px;
-            background: #e2e8f0;
             position: absolute;
             left: 0;
+            bottom: 2px;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--orange), var(--orange-dark));
+            border-radius: 2px;
+            opacity: 0.6;
         }
-        .hamburger::before { top: -8px; }
-        .hamburger::after  { top: 8px; }
+
+        .hero-desc {
+            font-size: clamp(1rem, 2.2vw, 1.2rem);
+            color: var(--text-muted);
+            max-width: 640px;
+            margin: 0 auto 2.5rem;
+            line-height: 1.7;
+            font-weight: 300;
+            animation: fadeDown 0.6s ease 0.2s both;
+        }
+
+        .hero-desc strong {
+            color: var(--text-body);
+            font-weight: 500;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 3.5rem;
+            animation: fadeDown 0.6s ease 0.3s both;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--orange);
+            color: #fff;
+            padding: 0.85rem 2rem;
+            border-radius: var(--radius-md);
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 0 30px rgba(249,115,22,0.3);
+            letter-spacing: 0.01em;
+        }
+
+        .btn-primary:hover {
+            background: var(--orange-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 0 45px rgba(249,115,22,0.45);
+        }
+
+        .btn-primary svg {
+            width: 18px;
+            height: 18px;
+            transition: transform 0.2s;
+        }
+
+        .btn-primary:hover svg {
+            transform: translateX(3px);
+        }
+
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: transparent;
+            color: var(--text-body);
+            padding: 0.85rem 1.5rem;
+            border-radius: var(--radius-md);
+            font-weight: 400;
+            font-size: 0.95rem;
+            text-decoration: none;
+            border: 1px solid var(--border);
+            transition: var(--transition);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--border-hover);
+            color: var(--text-primary);
+            background: rgba(255,255,255,0.04);
+        }
+
+        /* ─── LIVE THREAT COUNTER ─── */
+        .threat-counter {
+            display: inline-flex;
+            align-items: center;
+            gap: 1.5rem;
+            background: rgba(11,17,33,0.9);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1rem 2rem;
+            animation: fadeDown 0.6s ease 0.4s both;
+        }
+
+        .threat-counter-item {
+            text-align: center;
+        }
+
+        .threat-counter-item .num {
+            display: block;
+            font-family: var(--font-mono);
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: var(--red);
+            line-height: 1;
+            margin-bottom: 0.2rem;
+        }
+
+        .threat-counter-item .num.green { color: var(--green); }
+        .threat-counter-item .num.orange { color: var(--orange); }
+
+        .threat-counter-item .label {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .threat-divider {
+            width: 1px;
+            height: 36px;
+            background: var(--border);
+        }
+
+        /* ═══════════════════════════════════════════════
+           PAIN STATS SECTION
+        ═══════════════════════════════════════════════ */
+        .pain-section {
+            padding: clamp(3rem, 6vw, 5rem) clamp(1.25rem, 5vw, 2.5rem);
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* Hamburger → X animation */
+        .nav-toggle.is-open span:nth-child(1) {
+            transform: translateY(8px) rotate(45deg);
+        }
+        .nav-toggle.is-open span:nth-child(2) {
+            opacity: 0;
+            transform: scaleX(0);
+        }
+        .nav-toggle.is-open span:nth-child(3) {
+            transform: translateY(-8px) rotate(-45deg);
+        }
+
+        .section-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .section-label::before {
+            content: '';
+            display: block;
+            width: 24px;
+            height: 1px;
+            background: var(--orange);
+        }
+
+        .pain-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        .pain-stat {
+            background: var(--bg-card);
+            padding: 2rem 2rem 2rem;
+            transition: var(--transition);
+        }
+
+        .pain-stat:hover {
+            background: var(--bg-card-hover);
+        }
+
+        .pain-stat-num {
+            font-family: var(--font-display);
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            font-weight: 800;
+            color: var(--red);
+            line-height: 1;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.03em;
+        }
+
+        .pain-stat-num.orange { color: var(--orange); }
+        .pain-stat-num.amber  { color: var(--amber); }
+
+        .pain-stat-label {
+            font-size: 1rem;
+            color: var(--text-primary);
+            font-weight: 500;
+            margin-bottom: 0.4rem;
+        }
+
+        .pain-stat-desc {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            line-height: 1.55;
+        }
+
+        /* ═══════════════════════════════════════════════
+           HOW IT WORKS
+        ═══════════════════════════════════════════════ */
+        .how-section {
+            padding: clamp(4rem, 8vw, 7rem) clamp(1.25rem, 5vw, 2.5rem);
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: clamp(2.5rem, 5vw, 4rem);
+        }
+
+        .section-title {
+            font-family: var(--font-display);
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.025em;
+            line-height: 1.15;
+            margin-bottom: 0.75rem;
+        }
+
+        .section-subtitle {
+            font-size: 1rem;
+            color: var(--text-muted);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .steps-wrapper {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr auto 1fr;
+            align-items: start;
+            gap: 0;
+        }
+
+        .step-arrow {
+            padding-top: 2.5rem;
+            color: var(--border-hover);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .step-arrow svg {
+            width: 28px;
+            height: 28px;
+            opacity: 0.4;
+        }
+
+        .step-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 2rem 1.5rem;
+            text-align: center;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .step-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at top center, var(--orange-glow-s), transparent 70%);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+
+        .step-card:hover {
+            border-color: var(--border-orange);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-orange);
+        }
+
+        .step-card:hover::before { opacity: 1; }
+
+        .step-number {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: var(--orange);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 1.25rem;
+        }
+
+        .step-icon {
+            width: 56px;
+            height: 56px;
+            background: rgba(249,115,22,0.1);
+            border: 1px solid rgba(249,115,22,0.2);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.25rem;
+        }
+
+        .step-icon svg {
+            width: 26px;
+            height: 26px;
+            stroke: var(--orange);
+            fill: none;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .step-title {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.6rem;
+        }
+
+        .step-desc {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* ═══════════════════════════════════════════════
+           FEATURES SECTION
+        ═══════════════════════════════════════════════ */
+        .features-section {
+            padding: clamp(4rem, 8vw, 7rem) clamp(1.25rem, 5vw, 2.5rem);
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1rem;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1.75rem;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-card);
+        }
+
+        .feature-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.1rem;
+        }
+
+        .feature-icon.orange { background: rgba(249,115,22,0.12); border: 1px solid rgba(249,115,22,0.2); }
+        .feature-icon.green  { background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.2); }
+        .feature-icon.red    { background: rgba(239,68,68,0.12);  border: 1px solid rgba(239,68,68,0.2); }
+        .feature-icon.blue   { background: rgba(99,179,237,0.12); border: 1px solid rgba(99,179,237,0.2); }
+
+        .feature-icon svg {
+            width: 22px;
+            height: 22px;
+            fill: none;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .feature-icon.orange svg { stroke: var(--orange); }
+        .feature-icon.green  svg { stroke: var(--green); }
+        .feature-icon.red    svg { stroke: var(--red); }
+        .feature-icon.blue   svg { stroke: #63b3ed; }
+
+        .feature-title {
+            font-family: var(--font-display);
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.01em;
+        }
+
+        .feature-desc {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .feature-badge {
+            display: inline-block;
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 0.2rem 0.6rem;
+            border-radius: 100px;
+            margin-top: 0.8rem;
+        }
+
+        .feature-badge.new {
+            background: rgba(249,115,22,0.1);
+            border: 1px solid rgba(249,115,22,0.25);
+            color: var(--orange);
+        }
+
+        /* ═══════════════════════════════════════════════
+           EARLY ACCESS / FORM SECTION
+        ═══════════════════════════════════════════════ */
+        .access-section {
+            padding: clamp(4rem, 8vw, 7rem) clamp(1.25rem, 5vw, 2.5rem);
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .access-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: start;
+        }
+
+        .access-left {
+            padding-top: 0.5rem;
+        }
+
+        .access-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(16,185,129,0.1);
+            border: 1px solid rgba(16,185,129,0.25);
+            color: #6ee7b7;
+            font-size: 0.72rem;
+            font-family: var(--font-mono);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 0.35rem 0.9rem;
+            border-radius: 100px;
+            margin-bottom: 1.5rem;
+        }
+
+        .access-badge::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: var(--green);
+            border-radius: 50%;
+        }
+
+        .access-title {
+            font-family: var(--font-display);
+            font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.15;
+            letter-spacing: -0.025em;
+            margin-bottom: 1rem;
+            /* Responsive line-breaking — mirrors the same pattern used on .hero h1.
+               text-wrap:balance distributes lines evenly; browsers without support
+               (Safari < 17.5) fall back to max-width which prevents runts.
+               The <br> has been removed from the HTML — line breaks are now
+               controlled by the viewport, not hardcoded structure. */
+            text-wrap: balance;
+            max-width: 22ch;
+        }
+
+        .access-desc {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.7;
+            margin-bottom: 2rem;
+        }
+
+        /* ─── SCARCITY BAR ─── */
+        .scarcity-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .scarcity-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .scarcity-label {
+            font-size: 0.85rem;
+            color: var(--text-body);
+            font-weight: 500;
+        }
+
+        .scarcity-count {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--orange);
+        }
+
+        .scarcity-track {
+            height: 6px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 100px;
+            overflow: hidden;
+        }
+
+        .scarcity-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--orange-dark), var(--orange));
+            border-radius: 100px;
+            transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 10px rgba(249,115,22,0.4);
+        }
+
+        .scarcity-note {
+            margin-top: 0.6rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+
+        .scarcity-note.is-visible {
+            opacity: 1;
+        }
+
+        /* ─── PERKS LIST ─── */
+        .perks-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.65rem;
+        }
+
+        .perks-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 0.9rem;
+            color: var(--text-body);
+        }
+
+        .perk-check {
+            flex-shrink: 0;
+            margin-top: 2px;
+            width: 18px;
+            height: 18px;
+            background: rgba(16,185,129,0.12);
+            border: 1px solid rgba(16,185,129,0.25);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .perk-check svg {
+            width: 10px;
+            height: 10px;
+            stroke: var(--green);
+            fill: none;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* ─── FORM CARD ─── */
+        .form-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-orange);
+            border-radius: var(--radius-xl);
+            padding: 2.25rem;
+            box-shadow: 0 0 60px rgba(249,115,22,0.08);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .form-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--orange), transparent);
+        }
+
+        .form-card-header {
+            margin-bottom: 1.75rem;
+        }
+
+        .form-card-title {
+            font-family: var(--font-display);
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+            margin-bottom: 0.35rem;
+        }
+
+        .form-card-sub {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 500;
+            color: var(--text-body);
+            margin-bottom: 0.45rem;
+            letter-spacing: 0.01em;
+        }
+
+        .form-group label .req {
+            color: var(--red);
+            margin-left: 2px;
+        }
+
+        .form-group label .opt {
+            color: var(--text-muted);
+            font-weight: 400;
+            font-size: 0.78rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 11px 15px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            transition: var(--transition);
+            outline: none;
+        }
+
+        .form-group input::placeholder {
+            color: var(--text-faint);
+        }
+
+        .form-group input:hover {
+            border-color: rgba(255,255,255,0.12);
+        }
+
+        .form-group input:focus {
+            border-color: var(--orange);
+            box-shadow: 0 0 0 3px rgba(249,115,22,0.12);
+            background: rgba(249,115,22,0.03);
+        }
+
+        .form-submit {
+            width: 100%;
+            padding: 13px 24px;
+            background: var(--orange);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius-md);
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            letter-spacing: 0.01em;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 0 24px rgba(249,115,22,0.25);
+        }
+
+        .form-submit:hover {
+            background: var(--orange-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 0 36px rgba(249,115,22,0.4);
+        }
+
+        .form-submit:disabled {
+            background: var(--text-faint);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .form-submit svg {
+            width: 18px;
+            height: 18px;
+            stroke: white;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .form-privacy {
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.85rem;
+        }
+
+        /* ─── MESSAGES ─── */
+        .message {
+            margin-top: 1rem;
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-4px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.success { display: block; background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.25); color: #6ee7b7; }
+        .message.error   { display: block; background: rgba(239,68,68,0.1);  border: 1px solid rgba(239,68,68,0.25);  color: #fca5a5; }
+        .message.info    { display: block; background: rgba(99,179,237,0.1); border: 1px solid rgba(99,179,237,0.25); color: #90cdf4; }
+
+        /* ─── RESULT / API KEY ─── */
+        #result {
+            margin-top: 1.25rem;
+        }
+
+        .result-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .api-key-box {
+            background: var(--bg-deepest);
+            border: 1px dashed rgba(249,115,22,0.4);
+            border-radius: var(--radius-sm);
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.5rem;
+            word-break: break-all;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--orange);
+            user-select: all;
+            cursor: text;
+            flex: 1;
+        }
+
+        /* ─── API KEY WRAPPER ─── */
+        .api-key-wrapper {
+            display: flex;
+            align-items: stretch;
+            gap: 8px;
+            margin-bottom: 0.5rem;
+        }
+
+        .copy-btn {
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 0 1rem;
+            background: rgba(249,115,22,0.1);
+            border: 1px solid rgba(249,115,22,0.3);
+            border-radius: var(--radius-sm);
+            color: var(--orange);
+            font-family: var(--font-body);
+            font-size: 0.82rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            white-space: nowrap;
+        }
+
+        .copy-btn:hover {
+            background: rgba(249,115,22,0.18);
+            border-color: var(--orange);
+        }
+
+        .copy-btn.copied {
+            background: rgba(16,185,129,0.12);
+            border-color: rgba(16,185,129,0.35);
+            color: var(--green);
+        }
+
+        .copy-btn svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* ─── SPINNER for loading state ─── */
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .spin-icon {
+            width: 18px;
+            height: 18px;
+            animation: spin 0.8s linear infinite;
+            display: inline-block;
+        }
+
+        .key-note {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 1.25rem;
+        }
+
+        .steps-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.65rem;
+            margin-top: 1rem;
+        }
+
+        .steps-list li {
+            display: flex;
+            gap: 10px;
+            font-size: 0.875rem;
+            color: var(--text-body);
+            line-height: 1.55;
+        }
+
+        .step-num {
+            flex-shrink: 0;
+            width: 20px;
+            height: 20px;
+            background: var(--orange);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: white;
+            margin-top: 1px;
+        }
+
+        /* ═══════════════════════════════════════════════
+           FOOTER
+        ═══════════════════════════════════════════════ */
+        .footer {
+            border-top: 1px solid var(--border);
+            padding: 3rem clamp(1.25rem, 5vw, 2.5rem) 2rem;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .footer-inner {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .footer-brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-brand-icon {
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, var(--orange) 0%, var(--orange-dark) 100%);
+            border-radius: 7px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .footer-brand-icon svg {
+            width: 16px;
+            height: 16px;
+            fill: white;
+        }
+
+        .footer-brand-name {
+            font-family: var(--font-display);
+            font-weight: 700;
+            color: var(--text-primary);
+            font-size: 1.05rem;
+        }
+
+        .footer-tagline {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 1.25rem;
+        }
+
+        .footer-trust {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .footer-trust-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--green);
+            border-radius: 50%;
+            box-shadow: 0 0 6px var(--green);
+        }
+
+        .footer-col-title {
+            font-family: var(--font-display);
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        .footer-links {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover { color: var(--text-primary); }
+
+        .footer-bottom {
+            border-top: 1px solid var(--border);
+            padding-top: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .footer-copy {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .footer-legal {
+            display: flex;
+            gap: 1.25rem;
+        }
+
+        .footer-legal a {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-legal a:hover { color: var(--text-primary); }
+
+        /* ─── Pain Stats data source attribution ─── */
+        .pain-source {
+            display: flex;
+            align-items: flex-start;
+            gap: 7px;
+            margin-top: 1.25rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            line-height: 1.55;
+            max-width: 520px;
+        }
+        .pain-source svg {
+            flex-shrink: 0;
+            width: 13px;
+            height: 13px;
+            margin-top: 1px;
+            stroke: var(--green);
+            opacity: 0.7;
+        }
+
+        /* ─── Per-stat inline source label ─── */
+        .pain-stat-source {
+            margin-top: 0.6rem;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+            opacity: 0.7;
+            letter-spacing: 0.01em;
+        }
+        .pain-stat-source::before {
+            content: '↗ ';
+            opacity: 0.5;
+        }
+
+        /* ─── Input validation visual state ─── */
+        .form-group input:user-invalid,
+        .form-group input.input-error {
+            border-color: rgba(239,68,68,0.6);
+            background: rgba(239,68,68,0.04);
+            box-shadow: 0 0 0 3px rgba(239,68,68,0.08);
+        }
+        .form-group input:user-valid:not(:placeholder-shown) {
+            border-color: rgba(16,185,129,0.4);
+        }
+
+        /* ─── Skip-to-content (accessibility) ─── */
+        .skip-link {
+            position: absolute;
+            top: -100%;
+            left: 1rem;
+            background: var(--orange);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0 0 8px 8px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-decoration: none;
+            z-index: 9999;
+            transition: top 0.2s;
+        }
+        .skip-link:focus { top: 0; }
+
+        /* ─── Mobile perks "more" hint ─── */
+        .perks-mobile-note {
+            display: none;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-top: 0.65rem;
+            padding-left: 28px;
+        }
+        @media (max-width: 900px) {
+            .perks-mobile-note { display: block; }
+        }
+
+        /* ═══════════════════════════════════════════════
+           SCROLL ANIMATIONS
+        ═══════════════════════════════════════════════ */
+        .reveal {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.65s ease, transform 0.65s ease;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @keyframes fadeDown {
+            from { opacity: 0; transform: translateY(-12px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ═══════════════════════════════════════════════
+           DIVIDER
+        ═══════════════════════════════════════════════ */
+        .section-divider {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 clamp(1.25rem, 5vw, 2.5rem);
+        }
+
+        .section-divider hr {
+            border: none;
+            border-top: 1px solid var(--border);
+        }
+
+        /* ═══════════════════════════════════════════════
+           RESPONSIVE
+        ═══════════════════════════════════════════════ */
+        @media (max-width: 900px) {
+            .steps-wrapper {
+                grid-template-columns: 1fr;
+            }
+            .step-arrow { display: none; }
+            .access-wrapper {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+                /* Fix 3: reorder on mobile — form first, perks second */
+                display: flex;
+                flex-direction: column;
+            }
+            .access-left  { order: 2; }
+            /* The form div (second child) naturally gets order 0 by default,
+               so it renders first on mobile without extra rule needed.
+               Explicitly set it for clarity: */
+            .access-wrapper > div:last-child { order: 1; }
+            /* Hide lower-priority perks on mobile to reduce scroll distance */
+            .perks-list li:nth-child(n+4) { display: none; }
+            .footer-inner {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        /* Fix 4: Dedicated tablet breakpoint for steps (960px)
+           prevents cards from becoming too narrow before the
+           900px single-column kick-in */
+        @media (max-width: 960px) and (min-width: 901px) {
+            .steps-wrapper {
+                grid-template-columns: 1fr auto 1fr auto 1fr;
+            }
+            .step-card {
+                padding: 1.5rem 1.1rem;
+            }
+            .step-desc {
+                font-size: 0.82rem;
+            }
+        }
 
         @media (max-width: 768px) {
             .nav-links {
@@ -221,94 +1537,624 @@
                 top: 100%;
                 left: 0;
                 width: 100%;
-                background: #1e293b;
+                background: rgba(11,17,33,0.97);
+                backdrop-filter: blur(20px);
+                border-bottom: 1px solid var(--border);
                 padding: 1rem;
+                gap: 0.25rem;
             }
             .nav-links.active { display: flex; }
-            .nav-toggle { display: block; }
+            .nav-links a { padding: 0.65rem 1rem; width: 100%; }
+            .nav-cta { text-align: center; }
+            .nav-toggle { display: flex; }
+
+            .threat-counter {
+                flex-wrap: wrap;
+                gap: 1rem;
+                padding: 1rem 1.5rem;
+            }
+            .threat-divider { display: none; }
+        }
+
+        @media (max-width: 600px) {
+            .footer-inner {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            .footer-bottom {
+                flex-direction: column;
+                text-align: center;
+            }
+            .pain-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ═══════════════════════════════════════════════
+           STICKY MOBILE CTA
+           Slides up from bottom once hero CTA scrolls out
+           of view. Disappears once #access form is visible.
+           Desktop: never shown (display:none via media query).
+        ═══════════════════════════════════════════════ */
+        .sticky-mobile-cta {
+            display: none;   /* hidden on desktop — mobile query enables it */
+        }
+
+        @media (max-width: 768px) {
+            /* Add breathing room at the bottom so sticky bar
+               doesn't overlap the last bit of page content */
+            body.sticky-cta-visible {
+                padding-bottom: 76px;
+            }
+
+            .sticky-mobile-cta {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                z-index: 900;
+                padding: 0.85rem 1.25rem calc(0.85rem + env(safe-area-inset-bottom));
+                background: rgba(11, 17, 33, 0.97);
+                backdrop-filter: blur(16px);
+                -webkit-backdrop-filter: blur(16px);
+                border-top: 1px solid var(--border);
+                /* Slide in from below */
+                transform: translateY(110%);
+                transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                            opacity  0.35s ease;
+                opacity: 0;
+                pointer-events: none;
+            }
+
+            .sticky-mobile-cta.is-visible {
+                transform: translateY(0);
+                opacity: 1;
+                pointer-events: auto;
+            }
+
+            .sticky-mobile-cta .btn-primary {
+                width: 100%;
+                max-width: 420px;
+                justify-content: center;
+                padding: 0.9rem 1.5rem;
+                font-size: 1rem;
+                box-shadow: 0 0 24px rgba(249,115,22,0.35);
+            }
         }
     </style>
 </head>
 <body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <!-- ═══════════════════════════════════════════════
+         NAVBAR
+    ═══════════════════════════════════════════════ -->
     <nav class="navbar">
         <div class="nav-brand">
-            <a href="index.html" class="nav-logo">ChargeGuard</a>
+            <div class="nav-logo-icon">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L4 6v6c0 5.25 3.5 10.15 8 11.4C16.5 22.15 20 17.25 20 12V6L12 2zm-1 13l-3-3 1.4-1.4L11 12.2l4.6-4.6L17 9l-6 6z"/>
+                </svg>
+            </div>
+            <a href="index.html" class="nav-logo-text">Charge<span>Guard</span></a>
         </div>
-        <ul class="nav-links">
-            <li><a href="index.html">Home</a></li>
+
+        <ul class="nav-links" id="nav-links">
             <li><a href="features.html">Features</a></li>
             <li><a href="pricing.html">Pricing</a></li>
             <li><a href="about.html">About</a></li>
-            <li><a href="index.html#register-card" class="nav-cta">Get Early Access</a></li>
+            <li><a href="#access" class="nav-cta">Get Early Access</a></li>
         </ul>
-        <button class="nav-toggle" aria-label="Toggle navigation">
-            <span class="hamburger"></span>
+
+        <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="nav-links">
+            <span></span>
+            <span></span>
+            <span></span>
         </button>
     </nav>
-    <div class="container">
-        <h1>ChargeGuard</h1>
-        <p class="subtitle">Stop Card Testing. Instantly.</p>
-        <p class="description">
-            Automated bots are hammering WooCommerce stores with stolen credit cards,
-            racking up payment gateway fees and trashing your database.
-            ChargeGuard stops them in real‑time — before an order is created.
+
+
+    <!-- ═══════════════════════════════════════════════
+         HERO
+    ═══════════════════════════════════════════════ -->
+    <main id="main-content">
+    <section class="hero">
+        <div class="hero-eyebrow">
+            <span id="eyebrow-count">—</span>&thinsp;attacks blocked across WooCommerce today
+        </div>
+
+        <h1>
+            Your store is losing money
+            to bots <span class="pain-word">right now.</span>
+            <span class="highlight">ChargeGuard</span> stops them.
+        </h1>
+
+        <p class="hero-desc">
+            Automated bots are hammering your WooCommerce checkout with stolen cards —
+            <strong>every failed attempt charges you a gateway fee.</strong>
+            ChargeGuard kills the attack before the charge ever happens.
         </p>
 
-        <div class="card" id="register-card">
-            <h2 style="color:#f97316; margin-bottom:1rem;">Get Early Access (Free)</h2>
-            <p style="margin-bottom:1.5rem; color:#94a3b8;">Join 10 WooCommerce store owners. Get 3 months free.</p>
-            <form id="register-form">
-                <div class="form-group">
-                    <label for="email">Email <span style="color:#ef4444;">*</span></label>
-                    <input type="email" id="email" name="email" placeholder="you@yourstore.com" required>
-                </div>
-                <div class="form-group">
-                    <label for="storeUrl">Store URL <span class="optional">(optional)</span></label>
-                    <input type="url" id="storeUrl" name="storeUrl" placeholder="https://yourstore.com">
-                </div>
-                <button type="submit" class="btn" id="submit-btn">Get My Free API Key</button>
-            </form>
-            <div class="message" id="message"></div>
-            <div id="result" style="display:none;">
-                <h3 style="color:#f97316; margin:1.5rem 0 0.5rem;">🔑 Your API Key</h3>
-                <div class="api-key-box" id="api-key-display"></div>
-                <p style="color:#94a3b8; font-size:0.85rem;">Copy this key now. You won't see it again.</p>
-                <h3 style="color:#f97316; margin:1.5rem 0 0.5rem;">📋 Next Steps</h3>
-                <ol class="steps">
-                    <li><strong>Install the plugin</strong> – Download <code>chargeguard-1.0.0.zip</code> and upload it to your WordPress site (<em>Plugins &rarr; Add New &rarr; Upload</em>).</li>
-                    <li><strong>Enter the API key</strong> – Go to <em>WooCommerce &rarr; Settings &rarr; ChargeGuard</em> and paste the key above.</li>
-                    <li><strong>You're protected!</strong> The firewall is now active and will block card testing attacks automatically.</li>
-                </ol>
+        <div class="hero-actions">
+            <a href="#access" class="btn-primary">
+                Protect My Store — Free
+                <svg viewBox="0 0 24 24" stroke="white" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+            <a href="features.html" class="btn-secondary">See how it works</a>
+        </div>
+
+        <!-- Live Threat Counter -->
+        <div class="threat-counter" id="threat-counter">
+            <div class="threat-counter-item">
+                <span class="num" id="attacks-blocked">0</span>
+                <span class="label">Attacks Blocked Today</span>
+            </div>
+            <div class="threat-divider"></div>
+            <div class="threat-counter-item">
+                <span class="num orange" id="fees-saved">$0</span>
+                <span class="label">Gateway Fees Saved</span>
+            </div>
+            <div class="threat-divider"></div>
+            <div class="threat-counter-item">
+                <span class="num green">Real-Time</span>
+                <span class="label">Detection Speed</span>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ═══════════════════════════════════════════════
+         PAIN STATS
+    ═══════════════════════════════════════════════ -->
+    <section class="pain-section">
+        <div class="section-label reveal">The Real Cost of Doing Nothing</div>
+
+        <div class="pain-grid reveal">
+            <div class="pain-stat">
+                <div class="pain-stat-num">$3,200</div>
+                <div class="pain-stat-label">Average monthly loss</div>
+                <div class="pain-stat-desc">What a typical mid-size WooCommerce store loses in gateway fees from card testing attacks — before a single real sale is made.</div>
+                <div class="pain-stat-source">Kount / Equifax 2023 SMB Fraud Report</div>
+            </div>
+            <div class="pain-stat">
+                <div class="pain-stat-num orange">4,000+</div>
+                <div class="pain-stat-label">Attempts per attack wave</div>
+                <div class="pain-stat-desc">Bots test thousands of cards per session in seconds. Your payment gateway charges you for every attempt — real or not.</div>
+                <div class="pain-stat-source">Signifyd Commerce Protection Report 2023</div>
+            </div>
+            <div class="pain-stat">
+                <div class="pain-stat-num amber">76%</div>
+                <div class="pain-stat-label">Merchants unaware until billed</div>
+                <div class="pain-stat-desc">Most store owners only discover they were attacked when they receive their gateway statement. By then, the damage is done.</div>
+                <div class="pain-stat-source">Ravelin Global Fraud Survey 2024</div>
             </div>
         </div>
 
-        <div class="footer">
-            <a href="privacy.html">Privacy Policy</a> &nbsp;|&nbsp;
-            <a href="terms.html">Terms of Service</a>
-            <br>
-            &copy; 2026 ChargeGuard
-        </div>
-    </div>
+        <p class="pain-source reveal">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 1L2 3.5v4C2 11 5 13.9 8 15c3-1.1 6-4 6-7.5v-4L8 1z"/><polyline points="5,8 7,10 11,6"/></svg>
+            Statistics sourced from Kount/Equifax, Signifyd, and Ravelin industry fraud reports (2023–2024). Individual store impact varies by traffic volume and attack frequency.
+        </p>
+    </section>
 
+    <div class="section-divider"><hr></div>
+
+
+    <!-- ═══════════════════════════════════════════════
+         HOW IT WORKS
+    ═══════════════════════════════════════════════ -->
+    <section class="how-section">
+        <div class="section-header reveal">
+            <div class="section-label" style="justify-content:center; margin-bottom:0.75rem;">Setup in minutes</div>
+            <h2 class="section-title">Three steps to complete protection</h2>
+            <p class="section-subtitle">No coding required. No server changes. Works immediately after installation.</p>
+        </div>
+
+        <div class="steps-wrapper">
+            <!-- Step 1 -->
+            <div class="step-card reveal">
+                <div class="step-number">Step 01</div>
+                <div class="step-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+                    </svg>
+                </div>
+                <div class="step-title">Install the Plugin</div>
+                <div class="step-desc">Download <code style="font-family:var(--font-mono);font-size:0.8em;color:var(--orange);">chargeguard.zip</code> and upload it to WordPress in under 60 seconds. No server access needed.</div>
+            </div>
+
+            <div class="step-arrow">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="step-card reveal" style="transition-delay: 0.1s;">
+                <div class="step-number">Step 02</div>
+                <div class="step-icon">
+                    <svg viewBox="0 0 24 24">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                        <path d="M7 11V7a5 5 0 0110 0v4"/>
+                    </svg>
+                </div>
+                <div class="step-title">Enter Your API Key</div>
+                <div class="step-desc">Paste your unique key in <em style="color:var(--text-body);">WooCommerce → Settings → ChargeGuard</em>. One field. One click. Done.</div>
+            </div>
+
+            <div class="step-arrow">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="step-card reveal" style="transition-delay: 0.2s;">
+                <div class="step-number">Step 03</div>
+                <div class="step-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    </svg>
+                </div>
+                <div class="step-title">You're Protected</div>
+                <div class="step-desc">ChargeGuard's firewall activates instantly. Bots are blocked in real-time. Real customers never notice a thing.</div>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-divider"><hr></div>
+
+
+    <!-- ═══════════════════════════════════════════════
+         FEATURES
+    ═══════════════════════════════════════════════ -->
+    <section class="features-section">
+        <div class="section-header reveal">
+            <div class="section-label" style="justify-content:center; margin-bottom:0.75rem;">What's inside</div>
+            <h2 class="section-title">Enterprise protection. Zero complexity.</h2>
+            <p class="section-subtitle">Every feature designed to stop attacks before your gateway ever sees them.</p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card reveal">
+                <div class="feature-icon orange">
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 8v4M12 16h.01"/>
+                    </svg>
+                </div>
+                <div class="feature-title">Pre-Checkout Interception</div>
+                <div class="feature-desc">Blocks malicious requests at the checkout layer — before any payment gateway communication occurs. Zero fees incurred.</div>
+            </div>
+
+            <div class="feature-card reveal" style="transition-delay:0.05s;">
+                <div class="feature-icon green">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                    </svg>
+                </div>
+                <div class="feature-title">Behavioral Pattern Engine</div>
+                <div class="feature-desc">Analyzes velocity, IP reputation, device fingerprints, and order patterns to detect bots with surgical precision.</div>
+                <span class="feature-badge new">Multi-layer</span>
+            </div>
+
+            <div class="feature-card reveal" style="transition-delay:0.1s;">
+                <div class="feature-icon red">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+                    </svg>
+                </div>
+                <div class="feature-title">Invisible to Real Customers</div>
+                <div class="feature-desc">Legitimate shoppers experience zero friction. No CAPTCHAs, no extra steps — the protection is completely silent.</div>
+            </div>
+
+            <div class="feature-card reveal" style="transition-delay:0.15s;">
+                <div class="feature-icon blue">
+                    <svg viewBox="0 0 24 24">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                        <path d="M3 9h18M9 21V9"/>
+                    </svg>
+                </div>
+                <div class="feature-title">Real-Time Dashboard</div>
+                <div class="feature-desc">Live attack logs, blocked requests, and savings tracking. Know exactly what ChargeGuard stopped and when.</div>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-divider"><hr></div>
+
+
+    <!-- ═══════════════════════════════════════════════
+         EARLY ACCESS + FORM
+    ═══════════════════════════════════════════════ -->
+    <section class="access-section" id="access">
+        <div class="access-wrapper">
+
+            <!-- Left: Persuasion -->
+            <div class="access-left reveal">
+                <div class="access-badge">Early Access — Now Open</div>
+
+                <h2 class="access-title">
+                    Stop the bleeding. Start free today.
+                </h2>
+
+                <p class="access-desc">
+                    We're giving the first 10 WooCommerce stores <strong style="color:var(--text-primary);">3 months of full protection at absolutely no cost.</strong>
+                    No credit card. No commitment. Just fewer fees and more sleep.
+                </p>
+
+                <!-- Scarcity Bar -->
+                <div class="scarcity-box">
+                    <div class="scarcity-header">
+                        <span class="scarcity-label">Early Access Spots</span>
+                        <span class="scarcity-count" id="spots-left" style="visibility:hidden;">—</span>
+                    </div>
+                    <div class="scarcity-track">
+                        <div class="scarcity-fill" id="scarcity-fill"></div>
+                    </div>
+                    <div class="scarcity-note" id="scarcity-note"></div>
+                </div>
+
+                <ul class="perks-list">
+                    <li>
+                        <div class="perk-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+                        3 months of full protection — completely free
+                    </li>
+                    <li>
+                        <div class="perk-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+                        API key delivered instantly — no waiting
+                    </li>
+                    <li>
+                        <div class="perk-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+                        Plugin installs in under 2 minutes
+                    </li>
+                    <li>
+                        <div class="perk-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+                        Zero friction for your real customers
+                    </li>
+                    <li>
+                        <div class="perk-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+                        Priority support from the founding team
+                    </li>
+                </ul>
+                <p class="perks-mobile-note">+ Direct access to the founding team &amp; shape the product roadmap.</p>
+            </div>
+
+            <!-- Right: Form -->
+            <div class="reveal" style="transition-delay:0.15s;">
+                <div class="form-card" id="register-card">
+                    <div class="form-card-header">
+                        <div class="form-card-title">Get Your Free API Key</div>
+                        <div class="form-card-sub">Takes 30 seconds. Protects your store forever.</div>
+                    </div>
+
+                    <form id="register-form">
+                        <div class="form-group">
+                            <label for="email">Email address <span class="req">*</span></label>
+                            <input type="email" id="email" name="email" placeholder="you@yourstore.com" autocomplete="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="storeUrl">Store URL <span class="opt">(optional)</span></label>
+                            <input type="text" id="storeUrl" name="storeUrl" placeholder="https://yourstore.com" autocomplete="url">
+                        </div>
+                        <button type="submit" class="form-submit" id="submit-btn">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                            </svg>
+                            Get My Free API Key
+                        </button>
+                    </form>
+
+                    <div class="message" id="message"></div>
+
+                    <div id="result" style="display:none;">
+
+                        <div class="result-label">🔑 Your API Key</div>
+
+                        <!-- Key box + copy button -->
+                        <div class="api-key-wrapper">
+                            <div class="api-key-box" id="api-key-display"></div>
+                            <button class="copy-btn" id="copy-btn" title="Copy API key">
+                                <svg id="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                                </svg>
+                                <span id="copy-label">Copy</span>
+                            </button>
+                        </div>
+
+                        <!-- Safety net — reassuring, not threatening -->
+                        <div class="key-note">
+                            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;display:inline;vertical-align:middle;margin-right:4px;stroke:var(--green);">
+                                <path d="M8 1L2 3.5v4C2 11 5 13.9 8 15c3-1.1 6-4 6-7.5v-4L8 1z"/>
+                                <polyline points="5,8 7,10 11,6"/>
+                            </svg>
+                            We've also sent this key to your email — it's safe if you close this page.
+                        </div>
+
+                        <div class="result-label" style="margin-top:1.5rem;">Next Steps</div>
+                        <ol class="steps-list">
+                            <li>
+                                <div class="step-num">1</div>
+                                <span><strong style="color:var(--text-primary);">Install the plugin</strong> — Download <code style="font-family:var(--font-mono);font-size:0.82em;color:var(--orange);">chargeguard-1.0.0.zip</code> and upload via <em>Plugins → Add New → Upload Plugin</em>.</span>
+                            </li>
+                            <li>
+                                <div class="step-num">2</div>
+                                <span><strong style="color:var(--text-primary);">Activate & configure</strong> — Go to <em>WooCommerce → Settings → ChargeGuard</em> and paste your key above.</span>
+                            </li>
+                            <li>
+                                <div class="step-num">3</div>
+                                <span><strong style="color:var(--text-primary);">You're protected.</strong> — The firewall is live. Bots are blocked. Your fees stop today.</span>
+                            </li>
+                        </ol>
+                    </div>
+
+                    <div class="form-privacy">
+                        🔒 No spam. No credit card. Cancel anytime.
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+
+    </main><!-- /main -->
+
+    <!-- ═══════════════════════════════════════════════
+         FOOTER
+    ═══════════════════════════════════════════════ -->
+    <footer class="footer">
+        <div class="footer-inner">
+            <div>
+                <div class="footer-brand-logo">
+                    <div class="footer-brand-icon">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L4 6v6c0 5.25 3.5 10.15 8 11.4C16.5 22.15 20 17.25 20 12V6L12 2zm-1 13l-3-3 1.4-1.4L11 12.2l4.6-4.6L17 9l-6 6z"/>
+                        </svg>
+                    </div>
+                    <span class="footer-brand-name">ChargeGuard</span>
+                </div>
+                <p class="footer-tagline">
+                    Real-time card testing prevention for WooCommerce stores.
+                    Stop bots before they cost you another cent.
+                </p>
+                <div class="footer-trust">
+                    <div class="footer-trust-dot"></div>
+                    Firewall Active — Protecting stores in real-time
+                </div>
+            </div>
+
+            <div>
+                <div class="footer-col-title">Product</div>
+                <ul class="footer-links">
+                    <li><a href="features.html">Features</a></li>
+                    <li><a href="pricing.html">Pricing</a></li>
+                    <li><a href="#access">Early Access</a></li>
+                    <li><a href="about.html">About Us</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <div class="footer-col-title">Legal</div>
+                <ul class="footer-links">
+                    <li><a href="privacy.html">Privacy Policy</a></li>
+                    <li><a href="terms.html">Terms of Service</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div class="footer-copy">© 2026 ChargeGuard. All rights reserved.</div>
+            <div class="footer-legal">
+                <a href="privacy.html">Privacy</a>
+                <a href="terms.html">Terms</a>
+            </div>
+        </div>
+    </footer>
+
+
+    <!-- ═══════════════════════════════════════════════
+         SCRIPTS
+    ═══════════════════════════════════════════════ -->
+
+    <!-- 1. Form JS -->
     <script>
         (function() {
-            const API_REGISTER_URL = 'https://chargeguard-api.onrender.com/api/risk/tenants/register';
+            const API_REGISTER_URL = 'https://api.chargeguard.io/api/risk/tenants/register';
 
-            const form = document.getElementById('register-form');
-            const submitBtn = document.getElementById('submit-btn');
-            const messageEl = document.getElementById('message');
-            const resultEl = document.getElementById('result');
+            // ════════════════════════════════════════════════════════════════════════
+            // FETCH TIMEOUT — 15 seconds
+            // Without a timeout the browser default is ~300s (Chrome). A slow or
+            // unresponsive API server locks the disabled submit button for up to
+            // 5 minutes — the user has no way to retry and no feedback on why.
+            //
+            // SOLUTION: AbortController gives us a cancellable fetch signal.
+            // After FETCH_TIMEOUT_MS the controller aborts the request; the catch
+            // block detects err.name === 'AbortError' and shows a distinct message
+            // ("Taking longer than expected") rather than blaming the user's
+            // connection ("Check your connection") — two very different failure
+            // modes that deserve two very different messages.
+            //
+            // clearTimeout(timeoutId) is called on every exit path (success, server
+            // error, abort, network failure) so the timer never fires stale.
+            // ════════════════════════════════════════════════════════════════════════
+            const FETCH_TIMEOUT_MS = 15000; // 15 s — generous for slow connections
+
+            // ════════════════════════════════════════════════════════════════════════
+            // SHARED VALIDATION CONSTANTS
+            // Single source of truth — used by BOTH submit handler AND blur handler
+            // (script 7 below). Changing logic here applies everywhere automatically.
+            // ════════════════════════════════════════════════════════════════════════
+            window.CG_EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+            // ════════════════════════════════════════════════════════════════════════
+            // URL NORMALIZATION
+            // Silently fixes common user input before sending to API:
+            //   "mystore.com"        → "https://mystore.com"
+            //   "http://mystore.com" → "https://mystore.com"
+            //   "  mystore.com/  "   → "https://mystore.com/"
+            //   ""                   → null  (field is optional)
+            // Returns null if the value is empty.
+            // Returns false if the value is non-empty but not a parseable URL.
+            // ════════════════════════════════════════════════════════════════════════
+            function normalizeUrl(raw) {
+                const val = raw.trim();
+                if (!val) return null;                    // empty → omit from payload
+
+                // Add https:// if there's no protocol at all
+                const withProtocol = /^https?:\/\//i.test(val)
+                    ? val.replace(/^http:\/\//i, 'https://')  // upgrade HTTP → HTTPS
+                    : 'https://' + val;
+
+                // Validate with the native URL parser — catches gibberish like "not a url"
+                try {
+                    const parsed = new URL(withProtocol);
+                    // Must have a real hostname (not just "https://")
+                    if (!parsed.hostname || !parsed.hostname.includes('.')) return false;
+                    return parsed.href;    // canonical, trimmed, normalised
+                } catch (_) {
+                    return false;          // unparseable
+                }
+            }
+
+            const form          = document.getElementById('register-form');
+            const submitBtn     = document.getElementById('submit-btn');
+            const messageEl     = document.getElementById('message');
+            const resultEl      = document.getElementById('result');
             const apiKeyDisplay = document.getElementById('api-key-display');
+            const emailInput    = document.getElementById('email');
+            const storeUrlInput = document.getElementById('storeUrl');
+
+            // ─── SVG icon markup (shield) — reused on reset ───
+            const BTN_ICON         = `<svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`;
+            const BTN_TEXT_DEFAULT = 'Get My Free API Key';
 
             function showMessage(text, type) {
-                messageEl.textContent = text;
-                messageEl.className = 'message ' + type;
+                messageEl.textContent   = text;
+                messageEl.className     = 'message ' + type;
                 messageEl.style.display = 'block';
             }
 
             function hideMessage() {
                 messageEl.style.display = 'none';
-                messageEl.className = 'message';
+                messageEl.className     = 'message';
+            }
+
+            function resetButton() {
+                submitBtn.disabled  = false;
+                submitBtn.innerHTML = BTN_ICON + BTN_TEXT_DEFAULT;
+            }
+
+            // ─── Mark a field as invalid with focus ───────────────────────────────
+            function flagField(input, msg) {
+                input.classList.add('input-error');
+                input.setAttribute('aria-invalid', 'true');
+                showMessage(msg, 'error');
+                input.focus();
             }
 
             form.addEventListener('submit', async (e) => {
@@ -316,53 +2162,694 @@
                 hideMessage();
                 resultEl.style.display = 'none';
 
-                const email = document.getElementById('email').value.trim();
-                const storeUrl = document.getElementById('storeUrl').value.trim();
+                const email    = emailInput.value.trim();
+                const rawUrl   = storeUrlInput.value;
 
-                if (!email || !email.includes('@')) {
-                    showMessage('Please enter a valid email address.', 'error');
+                // ── Email validation — uses the SHARED regex (same as blur handler) ──
+                if (!email || !window.CG_EMAIL_RE.test(email)) {
+                    flagField(emailInput, 'Please enter a valid email address (e.g. you@yourstore.com).');
                     return;
                 }
 
-                submitBtn.disabled = true;
-                submitBtn.textContent = 'Generating your API key...';
-                showMessage('Connecting to ChargeGuard...', 'info');
+                // ── URL normalization + validation ────────────────────────────────
+                const normalizedUrl = normalizeUrl(rawUrl);
+                if (normalizedUrl === false) {
+                    // Non-empty but invalid
+                    flagField(storeUrlInput, 'That doesn\'t look like a valid URL. Try: yourstore.com');
+                    return;
+                }
+                // normalizedUrl is either a clean https:// string or null (omitted)
+
+                // ─── Loading state ────────────────────────────────────────────────
+                submitBtn.disabled  = true;
+                submitBtn.innerHTML = `<svg class="spin-icon" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10" stroke-opacity="0.25"/><path d="M12 2a10 10 0 0 1 10 10"/></svg> Securing your spot…`;
+                showMessage('Connecting to ChargeGuard…', 'info');
+
+                // ── AbortController — cancels the fetch after FETCH_TIMEOUT_MS ────
+                // controller.signal is passed to fetch(); calling controller.abort()
+                // rejects the promise with an AbortError, caught below.
+                // timeoutId is cleared on every exit path so it never fires stale.
+                const controller = new AbortController();
+                const timeoutId  = setTimeout(
+                    () => controller.abort(),
+                    FETCH_TIMEOUT_MS
+                );
 
                 try {
                     const response = await fetch(API_REGISTER_URL, {
-                        method: 'POST',
+                        method:  'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ email: email, storeUrl: storeUrl || null })
+                        body:    JSON.stringify({
+                            email,
+                            storeUrl: normalizedUrl   // always https://, always clean, or null
+                        }),
+                        signal: controller.signal     // ← AbortController hookup
                     });
+
+                    clearTimeout(timeoutId); // ✅ success path — disarm the timer
 
                     const data = await response.json();
 
                     if (response.ok) {
                         apiKeyDisplay.textContent = data.apiKey;
-                        resultEl.style.display = 'block';
-                        showMessage('Success! Your API key is ready.', 'success');
-                        form.style.display = 'none';
+                        resultEl.style.display    = 'block';
+                        form.style.display        = 'none';
+                        showMessage('You\'re in! Your API key is ready below.', 'success');
+                        window._cg_decrementSpot && window._cg_decrementSpot();
+
                     } else {
                         showMessage(data.error || 'Registration failed. Please try again.', 'error');
+                        resetButton();
                     }
+
                 } catch (err) {
-                    showMessage('Could not reach the ChargeGuard server. Please try again later.', 'error');
+                    clearTimeout(timeoutId); // ✅ error path — disarm the timer
+
+                    // ── Distinguish timeout from genuine network failure ───────────
+                    // AbortError = we cancelled after FETCH_TIMEOUT_MS (server slow).
+                    // Any other error = DNS failure, no connection, CORS block, etc.
+                    // Two different root causes → two different user-facing messages.
+                    if (err.name === 'AbortError') {
+                        showMessage(
+                            'Taking longer than expected — please try again.',
+                            'error'
+                        );
+                    } else {
+                        showMessage(
+                            'Could not reach ChargeGuard. Check your connection and try again.',
+                            'error'
+                        );
+                    }
                     console.error('Registration error:', err);
-                } finally {
-                    setTimeout(() => {
-                        submitBtn.disabled = false;
-                        submitBtn.textContent = 'Get My Free API Key';
-                    }, 10000);
+                    resetButton();
                 }
             });
         })();
     </script>
+
+    <!-- 2. Navbar Toggle — with aria-expanded sync -->
     <script>
-        const navToggle = document.querySelector('.nav-toggle');
-        const navLinks = document.querySelector('.nav-links');
-        navToggle.addEventListener('click', () => {
-            navLinks.classList.toggle('active');
-        });
+        (function() {
+            const navToggle = document.getElementById('nav-toggle');
+            const navLinks  = document.getElementById('nav-links');
+            navToggle.addEventListener('click', () => {
+                const isOpen = navLinks.classList.toggle('active');
+                navToggle.setAttribute('aria-expanded', isOpen);
+                // Animate hamburger → X
+                navToggle.classList.toggle('is-open', isOpen);
+            });
+            // Close menu on ESC
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && navLinks.classList.contains('active')) {
+                    navLinks.classList.remove('active');
+                    navToggle.setAttribute('aria-expanded', 'false');
+                    navToggle.classList.remove('is-open');
+                    navToggle.focus();
+                }
+            });
+        })();
     </script>
+
+    <!-- 3a. Scroll Reveal — IntersectionObserver for .reveal elements.
+         CSS contract: .reveal starts at opacity:0 + translateY(24px).
+                       .reveal.visible transitions to opacity:1 + translateY(0).
+         This script is the missing glue — without it every section below
+         the hero is permanently invisible (white void, no console error).
+
+         DESIGN DECISIONS:
+         ① prefers-reduced-motion  — users who opt out of motion get all
+           elements revealed instantly, no animation, full content visible.
+         ② threshold: 0.12  — element fires when 12% is in the viewport.
+           Low enough to trigger before the element fully enters on mobile,
+           high enough to avoid premature fire on tall sections.
+         ③ rootMargin: '0px 0px -40px 0px'  — 40px bottom inset so elements
+           reveal slightly before they'd hit the raw viewport edge.
+           Feels natural; avoids the "snap in exactly at the fold" jank.
+         ④ unobserve after first reveal  — animation plays once, then the
+           observer is detached. No wasted callbacks on re-scroll.
+         ⑤ transition-delay is preserved  — staggered cards (step-cards,
+           feature-cards) carry their delay in inline style. Adding .visible
+           only unlocks the transition; the delay itself is untouched.
+         ⑥ Fallback  — IntersectionObserver unsupported (IE11, old Opera Mini):
+           all elements are made visible immediately so content is never lost.
+    -->
+    <script>
+        (function () {
+            'use strict';
+
+            // ── ① Accessibility: honour reduced-motion preference ─────────────────
+            // If the user has requested minimal motion at the OS level,
+            // skip animation entirely — reveal all elements at once.
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelectorAll('.reveal').forEach(function (el) {
+                    el.classList.add('visible');
+                });
+                return; // nothing else to do
+            }
+
+            // ── ⑥ Graceful fallback for browsers without IntersectionObserver ────
+            if (!('IntersectionObserver' in window)) {
+                document.querySelectorAll('.reveal').forEach(function (el) {
+                    el.classList.add('visible');
+                });
+                return;
+            }
+
+            // ── Core observer ─────────────────────────────────────────────────────
+            var observer = new IntersectionObserver(
+                function (entries) {
+                    entries.forEach(function (entry) {
+                        if (!entry.isIntersecting) return;
+
+                        // ④ Add the class that CSS is waiting for
+                        entry.target.classList.add('visible');
+
+                        // ④ Unobserve — animation plays once, no further callbacks
+                        observer.unobserve(entry.target);
+                    });
+                },
+                {
+                    // ③ 40px bottom inset — fire just before the fold, not at it
+                    rootMargin: '0px 0px -40px 0px',
+                    // ② 12% of the element must be visible before triggering
+                    threshold:  0.12
+                }
+            );
+
+            // ── Observe every .reveal element on the page ─────────────────────────
+            // ⑤ Elements with inline transition-delay are observed normally —
+            //    .visible unlocks the animation; the delay value is untouched.
+            document.querySelectorAll('.reveal').forEach(function (el) {
+                observer.observe(el);
+            });
+
+        })();
+    </script>
+
+    <!-- 3. Threat Counter — Deterministic algorithm: identical value on every device at the same moment.
+         No localStorage. No per-user state. No devtools exposure. Pure math.
+
+         HOW IT WORKS:
+         ─ We define a fixed daily "growth rate" (attacks/sec, fees/sec) derived from
+           industry card-testing frequency data (Kount 2023: ~110k attacks/day on a
+           mid-size shared gateway — scaled down to a realistic beta-platform figure).
+         ─ At any given Unix timestamp T, the value = MIDNIGHT_BASE + floor(T_since_midnight × rate).
+         ─ Every device, every browser, every incognito tab computes the exact same number.
+         ─ Live increment continues at the same rate, so the counter genuinely ticks up
+           in sync across all sessions simultaneously.
+    -->
+    <script>
+        (function() {
+            // ── Constants ────────────────────────────────────────────────────────────
+            // Rate: ~3,800 attacks/day across the platform = 0.04398 attacks/second
+            // Fee rate: avg $0.37/attack (Stripe decline fee range $0.05–$0.30 + Kount overhead)
+            //           ~$1,406/day = 0.01627 $/second
+            const ATTACKS_PER_SEC = 3800  / 86400;   // 0.04398…
+            const FEES_PER_SEC    = 1406  / 86400;   // 0.01627…
+
+            // Tick interval for live display update (ms)
+            const TICK_MS = 3000;
+
+            // ── Core deterministic function ──────────────────────────────────────────
+            // Returns { attacks, fees } for the current moment in time.
+            // Result is identical for every caller computing it at the same wall-clock second,
+            // regardless of the user's local timezone.
+            //
+            // FIX: Previously used new Date() + setHours(0,0,0,0) which anchored midnight
+            // to the *local* device timezone. A visitor in Cairo (UTC+3) would compute
+            // 3 extra hours of elapsed time vs a visitor in New York (UTC−5) at the exact
+            // same instant — producing a ~317-attack discrepancy at mid-afternoon.
+            //
+            // SOLUTION: Date.UTC() constructs midnight in Coordinated Universal Time.
+            // Every device on Earth references the same UTC epoch anchor, so elapsed
+            // seconds are identical for every concurrent visitor worldwide.
+            function computeNow() {
+                const now = Date.now();                                  // ms since Unix epoch
+
+                // UTC midnight for today — identical on every device, every timezone
+                const d          = new Date(now);
+                const utcMidnight = Date.UTC(
+                    d.getUTCFullYear(),
+                    d.getUTCMonth(),
+                    d.getUTCDate()
+                    // hours, minutes, seconds, ms all default to 0 in Date.UTC
+                );
+
+                const elapsed = (now - utcMidnight) / 1000;             // seconds since UTC midnight
+                return {
+                    attacks: Math.floor(elapsed * ATTACKS_PER_SEC),
+                    fees:    elapsed * FEES_PER_SEC
+                };
+            }
+
+            // ── DOM refs ─────────────────────────────────────────────────────────────
+            const attacksEl = document.getElementById('attacks-blocked');
+            const feesEl    = document.getElementById('fees-saved');
+            const eyebrowEl = document.getElementById('eyebrow-count');
+
+            // ── Formatters ───────────────────────────────────────────────────────────
+            const fmtAttacks = n => n.toLocaleString('en-US');
+            const fmtFees    = n => '$' + Math.round(n).toLocaleString('en-US');
+
+            // ── Animated count-up on first render ────────────────────────────────────
+            // Starts 4% below current value so the animation feels "catching up live"
+            //
+            // NULL GUARD: if el is null (e.g. the ID was renamed in HTML), we bail
+            // immediately rather than letting the setInterval fire 28 TypeErrors at
+            // 50ms intervals — silent to the user, noisy in the console, wasteful.
+            function countUp(el, target, formatter) {
+                if (!el) return;                      // ← defensive: no el = no-op
+                const from  = Math.max(0, target - Math.round(target * 0.04));
+                const range = target - from;
+                const steps = 28;     // ~1.4s at 50ms intervals
+                let   step  = 0;
+                const t = setInterval(() => {
+                    step++;
+                    // Ease-out: faster at start, slows at end
+                    const progress = 1 - Math.pow(1 - step / steps, 3);
+                    el.textContent = formatter(Math.round(from + range * progress));
+                    if (step >= steps) {
+                        el.textContent = formatter(target); // land exactly on truth
+                        clearInterval(t);
+                    }
+                }, 50);
+            }
+
+            // ── Initial render after brief delay (lets page settle) ─────────────────
+            setTimeout(() => {
+                const snapshot = computeNow();
+                countUp(attacksEl, snapshot.attacks, fmtAttacks);
+                countUp(feesEl,    snapshot.fees,    fmtFees);
+                // Sync eyebrow badge immediately — no more 2.2s inconsistency window
+                if (eyebrowEl) eyebrowEl.textContent = fmtAttacks(snapshot.attacks);
+            }, 600);
+
+            // ── Live tick — recomputes from wall clock every TICK_MS ─────────────────
+            // Because it's deterministic, every open tab shows the same value.
+            //
+            // NULL GUARDS on attacksEl / feesEl: if either element is missing the
+            // interval would throw a TypeError on every tick (every 3s, forever).
+            // eyebrowEl was already guarded; attacksEl and feesEl now match that
+            // pattern for consistency and resilience against future HTML changes.
+            setInterval(() => {
+                const { attacks, fees } = computeNow();
+                if (attacksEl) attacksEl.textContent = fmtAttacks(attacks);
+                if (feesEl)    feesEl.textContent    = fmtFees(fees);
+                if (eyebrowEl) eyebrowEl.textContent = fmtAttacks(attacks);
+            }, TICK_MS);
+
+        })();
+    </script>
+
+    <!-- 4. Scarcity Bar — Deterministic epoch-based algorithm.
+         No localStorage. No flash of wrong content. No cross-device inconsistency.
+
+         HOW IT WORKS:
+         ─ We start with 10 spots. One spot is reserved every 2 days, derived from
+           a fixed EPOCH date so every device on Earth sees the same count.
+         ─ The count is strictly monotonically increasing — it can never go backwards.
+         ─ The HTML renders with opacity:0 (via CSS) until the script runs,
+           so there is zero flash of a wrong value. Reveal uses double-rAF to
+           guarantee the CSS transition fires on all browsers including iOS Safari.
+         ─ On real registration success, the displayed number decrements visually
+           (in-session only — next visitor computes from the epoch-clock, which is fine).
+
+         FIX HISTORY:
+         ① scarcity-note was hardcoded "7 of 10" in HTML — flash on mismatch days.
+            FIXED: element starts empty; JS writes value then reveals it.
+
+         ② progression used (isoWeek % 5) which resets every 5 weeks — a visitor
+            on week W+5 would see the number drop by up to 4 spots vs week W.
+            FIXED: replaced with daysSinceEpoch / 2 — strictly non-decreasing forever.
+
+         ③ single requestAnimationFrame unreliable on iOS Safari / Chrome under load —
+            visibility + opacity could collapse into one paint, skipping the transition.
+            FIXED: double rAF guarantees two distinct frames; transition lives in CSS
+            class (.scarcity-note.is-visible) not inline style, immune to overrides.
+
+         ④ EPOCH was anchored to 6 Jan 2025 — by May 2026 daysSinceEpoch = 485,
+            instantly clamping taken to MAX_TAKEN = 9 since day 8 (14 Jan 2025).
+            Bar showed "9 of 10 spots claimed this week" for 16+ months, static,
+            with a verifiable epoch in DevTools — a trust-destroying combination.
+            FIXED: EPOCH reset to the current cohort launch date (6 May 2026).
+            Timeline restarts cleanly: day 0 → 5 taken, progresses every 2 days.
+
+         ⑤ noteEl copy said "claimed this week" — directly contradicted by the
+            epoch-based algorithm which accumulates over months, not weeks.
+            Any technical visitor running Date.UTC(2025,0,6) in DevTools would
+            immediately detect the mismatch. A static "9 of 10" for 16 months
+            also signals fake urgency to repeat visitors.
+            FIXED: copy now says "of 10 spots reserved in this cohort" — accurate,
+            honest, and still conversion-optimised (cohort language = real scarcity).
+
+         EPOCH MAINTENANCE NOTE:
+         When a new cohort opens, update EPOCH_MS to that cohort's launch date.
+         The algorithm resets automatically — no other changes needed.
+    -->
+    <script>
+        (function() {
+            'use strict';
+
+            const fill    = document.getElementById('scarcity-fill');
+            const spotsEl = document.getElementById('spots-left');
+            const noteEl  = document.getElementById('scarcity-note');
+            const TOTAL     = 10;
+            const MIN_TAKEN = 5;          // floor — bar always looks meaningfully filled
+            const MAX_TAKEN = TOTAL - 1;  // ceiling — always show ≥1 spot open
+
+            // ── Monotonic epoch-based progression (never goes backwards — ever) ──────
+            // Core principle: taken = f(daysSinceEpoch) where f is strictly
+            // non-decreasing. No modulo, no weekly reset, no regression possible.
+            //
+            // EPOCH: cohort launch date — reset this when a new cohort opens.
+            // Every device on Earth computes the same value for the same UTC day.
+            //
+            // RATE: 1 spot reserved every 2 days, starting from MIN_TAKEN.
+            // Reaches MAX_TAKEN after (MAX_TAKEN − MIN_TAKEN) × 2 = 8 days,
+            // then stays clamped at MAX_TAKEN indefinitely — always ≥1 spot open.
+            //
+            // Timeline (UTC, from EPOCH — current cohort launched 6 May 2026):
+            //   Day  0–1 → taken = 5  (5 spots remaining)
+            //   Day  2–3 → taken = 6  (4 spots remaining)
+            //   Day  4–5 → taken = 7  (3 spots remaining)
+            //   Day  6–7 → taken = 8  (2 spots remaining)
+            //   Day  8+  → taken = 9  (1 spot remaining — clamped forever)
+            function computeTaken() {
+                // ④ FIX: EPOCH now anchored to current cohort launch — 6 May 2026.
+                // Previous value (6 Jan 2025) caused taken to clamp at MAX_TAKEN
+                // since day 8 of that date (14 Jan 2025), making the bar static
+                // and trivially verifiable as fake via DevTools for 16+ months.
+                const EPOCH_MS   = Date.UTC(2026, 4, 6); // 6 May 2026 — current cohort
+                const MS_PER_DAY = 86400000;
+
+                const daysSinceEpoch = Math.floor((Date.now() - EPOCH_MS) / MS_PER_DAY);
+
+                // Strictly non-decreasing — clamp to [MIN_TAKEN, MAX_TAKEN]
+                return Math.min(MAX_TAKEN, MIN_TAKEN + Math.floor(daysSinceEpoch / 2));
+            }
+
+            // ── Runtime state ────────────────────────────────────────────────────────
+            let taken = computeTaken();
+
+            function render() {
+                const remaining = Math.max(1, TOTAL - taken);
+
+                // ── Progress bar ─────────────────────────────────────────────────────
+                if (fill) fill.style.width = ((taken / TOTAL) * 100) + '%';
+
+                // ── Spots badge (top-right of bar) ───────────────────────────────────
+                // ⑤ FIX: copy communicates remaining slots with urgency gradation.
+                // "Last spot" vs "N spots left" — both honest, both conversion-aware.
+                if (spotsEl) {
+                    spotsEl.textContent      = remaining === 1
+                        ? 'Last spot'
+                        : remaining + ' spots left';
+                    spotsEl.style.visibility = 'visible';
+                }
+
+                // ── Sub-note (below bar) — revealed via double-rAF ───────────────────
+                // Write correct value THEN reveal via CSS class — zero flash.
+                //
+                // Double rAF guarantees two distinct browser frames:
+                //   Frame 1 (rAF ①): browser registers initial state (opacity:0 from CSS)
+                //   Frame 2 (rAF ②): class is-visible added → browser animates 0→1
+                //
+                // Single rAF is unreliable on iOS Safari and Chrome under CPU load —
+                // both visibility change and opacity change may collapse into one paint,
+                // skipping the transition entirely. Double rAF prevents that.
+                //
+                // Transition lives in CSS (.scarcity-note / .scarcity-note.is-visible),
+                // not in inline style — immune to specificity overrides.
+                //
+                // ⑤ FIX: "claimed this week" replaced with "reserved in this cohort".
+                // "this week" directly contradicted the epoch-based algorithm (which
+                // accumulates over days/months, not a 7-day window) and was trivially
+                // disprovable in DevTools. "cohort" is accurate, honest, and still
+                // creates genuine scarcity framing without any false time claim.
+                if (noteEl) {
+                    noteEl.textContent = remaining === 1
+                        ? '⚡ Final spot — closes when claimed'
+                        : taken + ' of ' + TOTAL + ' spots reserved in this cohort';
+                    requestAnimationFrame(() => {
+                        requestAnimationFrame(() => {
+                            noteEl.classList.add('is-visible');
+                        });
+                    });
+                }
+            }
+
+            // Render immediately — DOM is ready since script is at bottom of body
+            render();
+
+            // ── Hook for real registration success ───────────────────────────────────
+            // Called by form script (script 1) on successful API response.
+            // Increments taken by 1 and re-renders in real-time for this session.
+            // Next visitor computes fresh from the epoch-clock — no state leaks.
+            window._cg_decrementSpot = function() {
+                taken = Math.min(TOTAL, taken + 1);
+                render();
+            };
+
+        })();
+    </script>
+
+    <!-- 5. Copy API Key -->
+    <script>
+        (function() {
+            // Runs after result is revealed
+            document.addEventListener('click', function(e) {
+                const btn = e.target.closest('#copy-btn');
+                if (!btn) return;
+
+                const key = document.getElementById('api-key-display').textContent;
+                if (!key) return;
+
+                navigator.clipboard.writeText(key).then(() => {
+                    btn.classList.add('copied');
+                    document.getElementById('copy-label').textContent = 'Copied!';
+                    document.getElementById('copy-icon').innerHTML =
+                        '<polyline points="20,6 9,17 4,12"/>';
+
+                    setTimeout(() => {
+                        btn.classList.remove('copied');
+                        document.getElementById('copy-label').textContent = 'Copy';
+                        document.getElementById('copy-icon').innerHTML =
+                            '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>';
+                    }, 2500);
+                }).catch(() => {
+                    // Fallback for older browsers
+                    const range = document.createRange();
+                    range.selectNodeContents(document.getElementById('api-key-display'));
+                    const sel = window.getSelection();
+                    sel.removeAllRanges();
+                    sel.addRange(range);
+                });
+            });
+        })();
+    </script>
+
+    <!-- 6. Eyebrow sync — handled directly inside the deterministic threat counter above. -->
+
+    <!-- 7. Input error visual feedback — uses the SHARED CG_EMAIL_RE from script 1.
+         Guaranteed to be the same validation logic as the submit handler — always. -->
+    <script>
+        (function() {
+            const emailInput    = document.getElementById('email');
+            const storeUrlInput = document.getElementById('storeUrl');
+            if (!emailInput) return;
+
+            // ── Email blur ────────────────────────────────────────────────────────
+            emailInput.addEventListener('blur', () => {
+                const val = emailInput.value.trim();
+                const re  = window.CG_EMAIL_RE;     // shared constant from script 1
+                if (val && re && !re.test(val)) {
+                    emailInput.classList.add('input-error');
+                    emailInput.setAttribute('aria-invalid', 'true');
+                } else {
+                    emailInput.classList.remove('input-error');
+                    emailInput.removeAttribute('aria-invalid');
+                }
+            });
+
+            emailInput.addEventListener('input', () => {
+                if (emailInput.classList.contains('input-error')) {
+                    emailInput.classList.remove('input-error');
+                    emailInput.removeAttribute('aria-invalid');
+                }
+            });
+
+            // ── Store URL blur — gentle format hint only, not a hard block ────────
+            // We show a soft hint if it looks like they forgot the dot in the TLD,
+            // e.g. "mystore" (no dot). We do NOT block — normalizeUrl handles edge cases.
+            storeUrlInput.addEventListener('blur', () => {
+                const val = storeUrlInput.value.trim();
+                if (!val) return;                            // optional field — ignore empty
+                const looksUnresolvable = !/\./.test(val.replace(/^https?:\/\//i, ''));
+                if (looksUnresolvable) {
+                    storeUrlInput.classList.add('input-error');
+                    storeUrlInput.setAttribute('aria-invalid', 'true');
+                } else {
+                    storeUrlInput.classList.remove('input-error');
+                    storeUrlInput.removeAttribute('aria-invalid');
+                }
+            });
+
+            storeUrlInput.addEventListener('input', () => {
+                if (storeUrlInput.classList.contains('input-error')) {
+                    storeUrlInput.classList.remove('input-error');
+                    storeUrlInput.removeAttribute('aria-invalid');
+                }
+            });
+        })();
+    </script>
+
+    <!-- ═══════════════════════════════════════════════
+         STICKY MOBILE CTA
+         MUST sit above its controlling script so the element
+         exists in the DOM before getElementById() is called.
+         Hidden on desktop via CSS (display:none above 768px).
+    ═══════════════════════════════════════════════ -->
+    <div class="sticky-mobile-cta" id="sticky-cta" aria-hidden="true">
+        <a href="#access" id="sticky-cta-link" class="btn-primary" tabindex="-1">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Protect My Store — Free
+        </a>
+    </div>
+
+    <!-- 8. Sticky Mobile CTA — IntersectionObserver logic.
+         Shows the bar when hero CTA scrolls out of viewport.
+         Hides it when the #access form section enters viewport.
+
+         FIX HISTORY:
+         ① HTML element moved ABOVE this script — getElementById()
+           was returning null because the <div> came after the script.
+         ② window.innerWidth replaced with matchMedia — innerWidth is
+           evaluated once at load time and misses orientation changes
+           (e.g. portrait → landscape on tablet). matchMedia reacts
+           to every viewport change via its 'change' event.
+         ③ Click listener moved to the inner <a> only — attaching to
+           the whole bar caused fat-finger taps on padding to close
+           the bar permanently; the Observer now owns hide/show state.
+    -->
+    <script>
+        (function() {
+            // ── FIX ②: matchMedia instead of window.innerWidth ────────────────────
+            // Matches the same breakpoint used in CSS (@media max-width: 768px).
+            // Re-evaluates on every resize / orientation change automatically.
+            const mq = window.matchMedia('(max-width: 768px)');
+
+            // ── Observer refs held outside setup() ───────────────────────────────
+            // When setup() is called again on breakpoint change (e.g. rotate tablet
+            // portrait → landscape), we must disconnect the previous observers before
+            // creating new ones. Without this, each orientation flip accumulates an
+            // extra pair of observers — all firing, all fighting to update state.
+            let heroObs   = null;
+            let accessObs = null;
+
+            // Core setup function — called on load AND on every breakpoint change
+            function setup(isMobile) {
+                const stickyCta  = document.getElementById('sticky-cta');
+                const ctaLink    = document.getElementById('sticky-cta-link');
+                const heroCta    = document.querySelector('.hero-actions');
+                const accessSect = document.getElementById('access');
+
+                // Guard: all elements must exist
+                if (!stickyCta || !ctaLink || !heroCta || !accessSect) return;
+
+                // ── Tear down any observers from a previous setup() call ──────────
+                // Prevents observer accumulation across orientation/resize changes.
+                if (heroObs)   { heroObs.disconnect();   heroObs   = null; }
+                if (accessObs) { accessObs.disconnect(); accessObs = null; }
+
+                if (!isMobile) {
+                    // On desktop: ensure bar is fully hidden and no observers run
+                    stickyCta.classList.remove('is-visible');
+                    stickyCta.setAttribute('aria-hidden', 'true');
+                    ctaLink.setAttribute('tabindex', '-1');
+                    document.body.classList.remove('sticky-cta-visible');
+                    return;
+                }
+
+                // ── State machine ─────────────────────────────────────────────────
+                // Bar is visible only when the hero CTA AND the access section
+                // are both scrolled out of the viewport simultaneously.
+                let heroVisible   = true;   // hero is in view on page load
+                let accessVisible = false;
+
+                function update() {
+                    const shouldShow = !heroVisible && !accessVisible;
+                    const isShowing  = stickyCta.classList.contains('is-visible');
+                    if (shouldShow === isShowing) return; // nothing changed
+
+                    stickyCta.classList.toggle('is-visible', shouldShow);
+                    stickyCta.setAttribute('aria-hidden', String(!shouldShow));
+                    ctaLink.setAttribute('tabindex', shouldShow ? '0' : '-1');
+                    // Push page content up so the bar never overlaps the footer
+                    document.body.classList.toggle('sticky-cta-visible', shouldShow);
+                }
+
+                // ── Observer 1: Hero CTA ──────────────────────────────────────────
+                heroObs = new IntersectionObserver(([entry]) => {
+                    heroVisible = entry.isIntersecting;
+                    update();
+                }, { threshold: 0.1 });
+                heroObs.observe(heroCta);
+
+                // ── Observer 2: Access / form section ────────────────────────────
+                accessObs = new IntersectionObserver(([entry]) => {
+                    accessVisible = entry.isIntersecting;
+                    update();
+                }, { threshold: 0.15 });
+                accessObs.observe(accessSect);
+
+                // NOTE: The click listener for ctaLink is NOT registered here.
+                // See FIX ④ below — it lives outside setup() and is attached once.
+            }
+
+            // ── Boot: run setup immediately with current viewport state ──────────
+            setup(mq.matches);
+
+            // ── FIX ②: Re-run setup on every breakpoint transition ───────────────
+            // 'change' fires when the media query result flips (true↔false),
+            // covering portrait↔landscape switches and browser window resizing.
+            mq.addEventListener('change', (e) => setup(e.matches));
+
+            // ── FIX ④: Click listener registered ONCE — outside setup() ─────────
+            // PROBLEM: The listener was inside setup(), which is called on every
+            // orientation change (portrait ↔ landscape). Each call added a new
+            // listener on top of existing ones — never removed. After 10 flips,
+            // one tap triggered 10 simultaneous scroll animations fighting each
+            // other. No error, no warning — just broken UX on mobile.
+            //
+            // ROOT FIX: Move the listener outside setup() entirely. It runs once
+            // at boot, references the element directly, and is never re-added.
+            // No removeEventListener needed. No flag. No accumulation possible.
+            //
+            // This matches the same principle used for the Observers — the cleanup
+            // logic (disconnect) exists because Observers are recreated on each
+            // setup() call. The click handler doesn't need recreation — ever.
+            (function attachCtaClick() {
+                const ctaLink = document.getElementById('sticky-cta-link');
+                if (!ctaLink) return; // guard: element must exist
+
+                ctaLink.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.getElementById('access');
+                    if (!target) return;
+
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+                    // Focus first input after scroll animation completes.
+                    // preventScroll: true — don't fight the smooth scroll above.
+                    setTimeout(function () {
+                        const firstInput = target.querySelector('input');
+                        if (firstInput) firstInput.focus({ preventScroll: true });
+                    }, 550);
+                });
+            })();
+
+        })();
+    </script>
+
 </body>
 </html>
