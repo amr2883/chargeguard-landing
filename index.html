@@ -10,17 +10,17 @@
     <title>ChargeGuard — Stop Card Testing Before It Costs You</title>
     <meta name="description" content="Automated card testing bots are draining your WooCommerce revenue through gateway fees. ChargeGuard stops them in real-time — invisible to real customers, lethal to bots.">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://chargeguard.io/">
+    <link rel="canonical" href="https://chargeguard-io.netlify.app/">
 
     <!-- ═══════════════════════════════════════════════
          OPEN GRAPH — Facebook · LinkedIn · WhatsApp
     ═══════════════════════════════════════════════ -->
     <meta property="og:type"        content="website">
     <meta property="og:site_name"   content="ChargeGuard">
-    <meta property="og:url"         content="https://chargeguard.io/">
+    <meta property="og:url"         content="https://chargeguard-io.netlify.app/">
     <meta property="og:title"       content="ChargeGuard — Stop Card Testing Before It Costs You">
     <meta property="og:description" content="Card testing bots charge your gateway for every stolen card attempt. ChargeGuard blocks them in real-time — free for the first 10 WooCommerce stores.">
-    <meta property="og:image"       content="https://chargeguard.io/og-image.png">
+    <meta property="og:image"       content="https://chargeguard-io.netlify.app/og-image.png">
     <meta property="og:image:width"  content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:image:alt"    content="ChargeGuard dashboard showing card testing attacks blocked in real-time">
@@ -33,7 +33,7 @@
     <meta name="twitter:site"        content="@chargeguard">
     <meta name="twitter:title"       content="ChargeGuard — Stop Card Testing Before It Costs You">
     <meta name="twitter:description" content="Card testing bots charge your gateway for every stolen card attempt. ChargeGuard blocks them in real-time — free for the first 10 WooCommerce stores.">
-    <meta name="twitter:image"       content="https://chargeguard.io/og-image.png">
+    <meta name="twitter:image"       content="https://chargeguard-io.netlify.app/og-image.png">
     <meta name="twitter:image:alt"   content="ChargeGuard dashboard showing attacks blocked in real-time">
 
     <!-- ═══════════════════════════════════════════════
@@ -47,7 +47,7 @@
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
         "name": "ChargeGuard",
-        "url": "https://chargeguard.io/",
+        "url": "https://chargeguard-io.netlify.app/",
         "description": "Real-time card testing attack prevention for WooCommerce. Blocks bots before they trigger gateway fees — invisible to legitimate customers.",
         "applicationCategory": "SecurityApplication",
         "operatingSystem": "WordPress / WooCommerce",
@@ -61,7 +61,7 @@
         "publisher": {
             "@type": "Organization",
             "name": "ChargeGuard",
-            "url": "https://chargeguard.io/"
+            "url": "https://chargeguard-io.netlify.app/"
         },
         "featureList": [
             "Real-time card testing detection",
@@ -83,6 +83,9 @@
     <!-- ═══════════════════════════════════════════════
          FONTS
     ═══════════════════════════════════════════════ -->
+    <!-- Cloudflare Turnstile — invisible bot protection for registration form -->
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -1455,6 +1458,485 @@
         }
 
         /* ═══════════════════════════════════════════════
+           PRICING SECTION
+        ═══════════════════════════════════════════════ */
+
+        /* ─── Toggle ─── */
+        .pricing-toggle-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-bottom: 3rem;
+        }
+
+        .toggle-label {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            font-family: var(--font-body);
+            transition: color 0.2s;
+        }
+
+        .toggle-label.active {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .toggle-save-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(16,185,129,0.12);
+            border: 1px solid rgba(16,185,129,0.25);
+            color: #6ee7b7;
+            font-size: 0.7rem;
+            font-family: var(--font-mono);
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            padding: 0.2rem 0.6rem;
+            border-radius: 100px;
+            margin-left: 0.25rem;
+            transition: opacity 0.3s;
+        }
+
+        .toggle-save-badge.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .toggle-pill {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            cursor: pointer;
+            transition: background 0.25s, border-color 0.25s;
+            flex-shrink: 0;
+        }
+
+        .toggle-pill.is-annual {
+            background: rgba(249,115,22,0.2);
+            border-color: rgba(249,115,22,0.4);
+        }
+
+        .toggle-thumb {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 16px;
+            height: 16px;
+            background: var(--text-muted);
+            border-radius: 50%;
+            transition: transform 0.25s cubic-bezier(0.4,0,0.2,1),
+                        background 0.25s;
+        }
+
+        .toggle-pill.is-annual .toggle-thumb {
+            transform: translateX(20px);
+            background: var(--orange);
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1.25rem;
+            align-items: start;
+            max-width: 960px;
+            margin: 0 auto;
+        }
+
+        .pricing-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            padding: 2rem;
+            position: relative;
+            transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+            overflow: hidden;
+        }
+
+        .pricing-card:hover {
+            border-color: var(--border-hover);
+            box-shadow: var(--shadow-card);
+        }
+
+        .pricing-card.featured {
+            transform: translateY(-14px);
+            border-color: var(--orange);
+            box-shadow:
+                0 0 0 1px rgba(249,115,22,0.25),
+                0 24px 64px rgba(249,115,22,0.18),
+                0 8px 32px rgba(0,0,0,0.55);
+            padding: 2.25rem 2rem;
+            background: linear-gradient(
+                160deg,
+                rgba(249,115,22,0.05) 0%,
+                var(--bg-card) 50%
+            );
+        }
+
+        .pricing-card.featured::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg,
+                transparent 0%,
+                var(--orange) 40%,
+                var(--orange-dark) 60%,
+                transparent 100%);
+            border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+        }
+
+        .pricing-card.featured::after {
+            content: '';
+            position: absolute;
+            top: -40px;
+            right: -40px;
+            width: 180px;
+            height: 180px;
+            background: radial-gradient(
+                circle,
+                rgba(249,115,22,0.08) 0%,
+                transparent 70%
+            );
+            pointer-events: none;
+        }
+
+        .pricing-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 0.3rem 0.8rem;
+            border-radius: 100px;
+            margin-bottom: 1.25rem;
+        }
+
+        .pricing-badge.badge-muted {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+        }
+
+        .pricing-badge.badge-featured {
+            background: var(--orange);
+            color: #fff;
+            box-shadow: 0 0 16px rgba(249,115,22,0.4);
+        }
+
+        .pricing-badge.badge-agency {
+            background: rgba(99,179,237,0.1);
+            border: 1px solid rgba(99,179,237,0.2);
+            color: #90cdf4;
+        }
+
+        .pricing-price-block {
+            margin: 1.25rem 0 0.5rem;
+        }
+
+        .pricing-price-row {
+            display: flex;
+            align-items: flex-end;
+            gap: 4px;
+            line-height: 1;
+        }
+
+        .price-currency {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .price-amount {
+            font-family: var(--font-display);
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -0.04em;
+            line-height: 1;
+            transition: opacity 0.2s;
+        }
+
+        .pricing-card.featured .price-amount {
+            color: var(--orange);
+        }
+
+        .price-period {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            font-weight: 400;
+        }
+
+        .price-annual-note {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+            margin-top: 0.35rem;
+            min-height: 1.1em;
+            transition: opacity 0.25s;
+        }
+
+        .price-annual-note.hidden {
+            opacity: 0;
+        }
+
+        .price-save-tag {
+            display: inline-block;
+            background: rgba(16,185,129,0.12);
+            border: 1px solid rgba(16,185,129,0.25);
+            color: #6ee7b7;
+            font-size: 0.68rem;
+            font-family: var(--font-mono);
+            letter-spacing: 0.06em;
+            padding: 0.15rem 0.5rem;
+            border-radius: 100px;
+            margin-left: 6px;
+            vertical-align: middle;
+            transition: opacity 0.25s;
+        }
+
+        .price-save-tag.hidden { opacity: 0; }
+
+        .pricing-value-prop {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin: 0.75rem 0 1.5rem;
+            min-height: 2.5em;
+        }
+
+        .pricing-card.featured .pricing-value-prop {
+            color: var(--text-body);
+        }
+
+        .pricing-features {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            margin-bottom: 1.75rem;
+        }
+
+        .pricing-features li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 0.875rem;
+            color: var(--text-body);
+            line-height: 1.45;
+        }
+
+        .pricing-features li .feat-icon {
+            flex-shrink: 0;
+            margin-top: 2px;
+            width: 17px;
+            height: 17px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .feat-icon.check {
+            background: rgba(16,185,129,0.12);
+            border: 1px solid rgba(16,185,129,0.25);
+        }
+
+        .feat-icon.check svg {
+            width: 9px; height: 9px;
+            stroke: var(--green);
+            fill: none;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .feat-icon.check-orange {
+            background: rgba(249,115,22,0.12);
+            border: 1px solid rgba(249,115,22,0.25);
+        }
+
+        .feat-icon.check-orange svg {
+            width: 9px; height: 9px;
+            stroke: var(--orange);
+            fill: none;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .pricing-cta {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 0.85rem 1.5rem;
+            border-radius: var(--radius-md);
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            letter-spacing: 0.01em;
+        }
+
+        .pricing-cta svg {
+            width: 16px; height: 16px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transition: transform 0.2s;
+        }
+
+        .pricing-cta:hover svg { transform: translateX(3px); }
+
+        .pricing-cta.cta-ghost {
+            background: transparent;
+            color: var(--text-body);
+            border: 1px solid var(--border);
+        }
+
+        .pricing-cta.cta-ghost:hover {
+            border-color: var(--border-hover);
+            color: var(--text-primary);
+            background: rgba(255,255,255,0.04);
+        }
+
+        .pricing-cta.cta-primary {
+            background: var(--orange);
+            color: #fff;
+            box-shadow: 0 0 28px rgba(249,115,22,0.3);
+        }
+
+        .pricing-cta.cta-primary:hover {
+            background: var(--orange-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 0 44px rgba(249,115,22,0.45);
+        }
+
+        .pricing-cta.cta-agency {
+            background: rgba(99,179,237,0.07);
+            color: #90cdf4;
+            border: 1px solid rgba(99,179,237,0.2);
+        }
+
+        .pricing-cta.cta-agency:hover {
+            background: rgba(99,179,237,0.12);
+            border-color: rgba(99,179,237,0.35);
+            color: #bfdbfe;
+        }
+
+        .pricing-card-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 1.5rem 0;
+        }
+
+        .pricing-card.featured .pricing-card-divider {
+            background: rgba(249,115,22,0.2);
+        }
+
+        .pricing-faq {
+            max-width: 960px;
+            margin: 3.5rem auto 0;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        .pricing-faq-item {
+            background: var(--bg-card);
+            padding: 1.5rem;
+            transition: background 0.2s;
+        }
+
+        .pricing-faq-item:hover {
+            background: var(--bg-card-hover);
+        }
+
+        .pricing-faq-q {
+            font-family: var(--font-display);
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .pricing-faq-q::before {
+            content: 'Q';
+            flex-shrink: 0;
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            background: rgba(249,115,22,0.15);
+            color: var(--orange);
+            border-radius: 4px;
+            padding: 2px 5px;
+            margin-top: 1px;
+            letter-spacing: 0.05em;
+        }
+
+        .pricing-faq-a {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            padding-left: 28px;
+        }
+
+        .pricing-faq-a .upgrade-link {
+            color: var(--orange);
+            text-decoration: none;
+            border-bottom: 1px solid rgba(249,115,22,0.3);
+            transition: border-color 0.2s;
+        }
+
+        .pricing-faq-a .upgrade-link:hover {
+            border-color: var(--orange);
+        }
+
+        @media (max-width: 900px) {
+            .pricing-grid {
+                grid-template-columns: 1fr;
+                max-width: 420px;
+            }
+            .pricing-card.featured {
+                transform: none;
+                order: -1;
+            }
+            .pricing-faq {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .pricing-toggle-wrap {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+
+        /* ═══════════════════════════════════════════════
            SCROLL ANIMATIONS
         ═══════════════════════════════════════════════ */
         .reveal {
@@ -1643,10 +2125,10 @@
         </div>
 
         <ul class="nav-links" id="nav-links">
-            <li><a href="features.html">Features</a></li>
-            <li><a href="pricing.html">Pricing</a></li>
-            <li><a href="about.html">About</a></li>
-            <li><a href="#access" class="nav-cta">Get Early Access</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#how-it-works">How It Works</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#access" class="nav-cta">Get Early Access</a></li>
         </ul>
 
         <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="nav-links">
@@ -1655,7 +2137,6 @@
             <span></span>
         </button>
     </nav>
-
 
     <!-- ═══════════════════════════════════════════════
          HERO
@@ -1685,19 +2166,19 @@
                     <path d="M5 12h14M12 5l7 7-7 7"/>
                 </svg>
             </a>
-            <a href="features.html" class="btn-secondary">See how it works</a>
+            <a href="#how-it-works" class="btn-secondary">See how it works</a>
         </div>
 
         <!-- Live Threat Counter -->
         <div class="threat-counter" id="threat-counter">
             <div class="threat-counter-item">
                 <span class="num" id="attacks-blocked">0</span>
-                <span class="label">Attacks Blocked Today</span>
+                <span class="label">Attacks Blocked Today (Est.)</span>
             </div>
             <div class="threat-divider"></div>
             <div class="threat-counter-item">
                 <span class="num orange" id="fees-saved">$0</span>
-                <span class="label">Gateway Fees Saved</span>
+                <span class="label">Gateway Fees Saved (Est.)</span>
             </div>
             <div class="threat-divider"></div>
             <div class="threat-counter-item">
@@ -1747,7 +2228,7 @@
     <!-- ═══════════════════════════════════════════════
          HOW IT WORKS
     ═══════════════════════════════════════════════ -->
-    <section class="how-section">
+    <section class="how-section" id="how-it-works">
         <div class="section-header reveal">
             <div class="section-label" style="justify-content:center; margin-bottom:0.75rem;">Setup in minutes</div>
             <h2 class="section-title">Three steps to complete protection</h2>
@@ -1764,7 +2245,7 @@
                     </svg>
                 </div>
                 <div class="step-title">Install the Plugin</div>
-                <div class="step-desc">Download <code style="font-family:var(--font-mono);font-size:0.8em;color:var(--orange);">chargeguard.zip</code> and upload it to WordPress in under 60 seconds. No server access needed.</div>
+                <div class="step-desc">Download <a href="https://github.com/amr2883/chargeguard-plugin/releases/latest/download/chargeguard.zip" download="chargeguard.zip" style="color:var(--orange);text-decoration:underline;text-underline-offset:3px;font-family:var(--font-mono);font-size:0.8em;">chargeguard.zip</a> and upload it to WordPress in under 60 seconds. No server access needed.</div>
             </div>
 
             <div class="step-arrow">
@@ -1812,7 +2293,7 @@
     <!-- ═══════════════════════════════════════════════
          FEATURES
     ═══════════════════════════════════════════════ -->
-    <section class="features-section">
+    <section class="features-section" id="features">
         <div class="section-header reveal">
             <div class="section-label" style="justify-content:center; margin-bottom:0.75rem;">What's inside</div>
             <h2 class="section-title">Enterprise protection. Zero complexity.</h2>
@@ -1867,10 +2348,235 @@
 
     <div class="section-divider"><hr></div>
 
-
     <!-- ═══════════════════════════════════════════════
-         EARLY ACCESS + FORM
+         PRICING
     ═══════════════════════════════════════════════ -->
+    <section class="how-section" id="pricing">
+        <div class="section-header reveal">
+            <div class="section-label" style="justify-content:center; margin-bottom:0.75rem;">Simple Pricing</div>
+            <h2 class="section-title">Protection That Pays for Itself</h2>
+            <p class="section-subtitle">Every day unprotected is a day bots can drain your gateway fees. Pick your shield.</p>
+        </div>
+
+        <!-- ─── Annual / Monthly Toggle ─── -->
+        <div class="pricing-toggle-wrap reveal">
+            <span class="toggle-label active" id="lbl-monthly">Monthly</span>
+            <div class="toggle-pill is-annual" id="billing-toggle" role="switch"
+                 aria-checked="true" aria-label="Toggle annual billing" tabindex="0">
+                <div class="toggle-thumb"></div>
+            </div>
+            <span class="toggle-label active" id="lbl-annual">
+                Annual
+                <span class="toggle-save-badge" id="save-badge">Save 2 months</span>
+            </span>
+        </div>
+
+        <!-- ─── 3 Cards ─── -->
+        <div class="pricing-grid reveal">
+
+            <!-- Card 1: Shield Starter -->
+            <div class="pricing-card">
+                <div class="pricing-badge badge-muted">Shield Starter</div>
+                <div class="pricing-price-block">
+                    <div class="pricing-price-row">
+                        <span class="price-currency">$</span>
+                        <span class="price-amount" id="price-starter">0</span>
+                        <span class="price-period">/mo</span>
+                    </div>
+                    <div class="price-annual-note hidden" id="note-starter">&nbsp;</div>
+                </div>
+                <p class="pricing-value-prop">See exactly what's hitting your store — at no cost. Up to 500 attacks blocked per month.</p>
+                <div class="pricing-card-divider"></div>
+                <ul class="pricing-features">
+                    <li>
+                        <span class="feat-icon check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>
+                        Real-time card testing detection
+                    </li>
+                    <li>
+                        <span class="feat-icon check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>
+                        Attack log &amp; threat dashboard
+                    </li>
+                    <li>
+                        <span class="feat-icon check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>
+                        500 attacks blocked / month
+                    </li>
+                </ul>
+                <a href="#access" class="pricing-cta cta-ghost">
+                    Start Free
+                    <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
+            </div>
+
+            <!-- Card 2: Shield Pro — Featured -->
+            <div class="pricing-card featured">
+                <div class="pricing-badge badge-featured">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="white"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    Most Protection
+                </div>
+                <div class="pricing-price-block">
+                    <div class="pricing-price-row">
+                        <span class="price-currency">$</span>
+                        <span class="price-amount" id="price-pro">13</span>
+                        <span class="price-period">/mo</span>
+                        <span class="price-save-tag" id="tag-pro">Save $69</span>
+                    </div>
+                    <div class="price-annual-note" id="note-pro">Billed $159/year — 2 months free</div>
+                </div>
+                <p class="pricing-value-prop">Less than the cost of one small attack — while blocking hundreds every month.</p>
+                <div class="pricing-card-divider"></div>
+                <ul class="pricing-features">
+                    <li>
+                        <span class="feat-icon check-orange"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>
+                        Everything in Starter
+                    </li>
+                    <li>
+                        <span class="feat-icon check-orange"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>
+                        5,000 attacks blocked / month
+                    </li>
+                    <li>
+                        <span class="feat-icon check-orange"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>
+                        BIN intelligence &amp; IP blacklist
+                    </li>
+                    <li>
+                        <span class="feat-icon check-orange"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>
+                        Email + Slack / Discord alerts
+                    </li>
+                    <li>
+                        <span class="feat-icon check-orange"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>
+                        Gateway Fee Recovery Guarantee
+                    </li>
+                </ul>
+                <a href="#access" class="pricing-cta cta-primary">
+                    Protect My Store
+                    <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </a>
+            </div>
+
+            <!-- Card 3: Shield Agency -->
+            <div class="pricing-card">
+                <div class="pricing-badge badge-agency">Shield Agency</div>
+                <div class="pricing-price-block">
+                    <div class="pricing-price-row">
+                        <span class="price-currency">$</span>
+                        <span class="price-amount" id="price-agency">33</span>
+                        <span class="price-period">/mo</span>
+                        <span class="price-save-tag" id="tag-agency">Save $189</span>
+                    </div>
+                    <div class="price-annual-note" id="note-agency">Billed $399/year — 2 months free</div>
+                </div>
+                <p class="pricing-value-prop">Up to 5 stores. Unlimited attacks. Save $46/mo vs. Pro per store.</p>
+                <div class="pricing-card-divider"></div>
+                <ul class="pricing-features">
+                    <li>
+                        <span class="feat-icon check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>
+                        Everything in Pro
+                    </li>
+                    <li>
+                        <span class="feat-icon check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>
+                        Up to 5 WooCommerce stores
+                    </li>
+                    <li>
+                        <span class="feat-icon check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>
+                        Unlimited attacks across all stores
+                    </li>
+                    <li>
+                        <span class="feat-icon check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>
+                        Unified multi-store dashboard
+                    </li>
+                </ul>
+                <a href="#access" class="pricing-cta cta-agency">
+                    Protect All Stores
+                    <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
+            </div>
+
+        </div>
+
+        <!-- ─── FAQ Strip ─── -->
+        <div class="pricing-faq reveal">
+            <div class="pricing-faq-item">
+                <div class="pricing-faq-q">Can I cancel anytime?</div>
+                <div class="pricing-faq-a">Yes. Downgrade to Starter or cancel in one click — no questions asked, no cancellation fees, ever.</div>
+            </div>
+            <div class="pricing-faq-item">
+                <div class="pricing-faq-q">What happens at the 500-attack limit?</div>
+                <div class="pricing-faq-a">Protection pauses until next month. You'll see a clear warning before you reach it — with a single click to <a href="#access" class="upgrade-link">upgrade instantly</a>.</div>
+            </div>
+            <div class="pricing-faq-item">
+                <div class="pricing-faq-q">Will real customers notice anything?</div>
+                <div class="pricing-faq-a">Nothing. Zero friction. The shield is completely invisible to legitimate shoppers — only bots get blocked.</div>
+            </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:1.5rem; max-width:800px; margin:0 auto;">
+
+            <!-- Free Plan -->
+            <div class="step-card reveal" style="text-align:left; padding:2rem;">
+                <div style="font-family:var(--font-mono); font-size:0.72rem; color:var(--text-muted); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:1rem;">Early Access</div>
+                <div style="font-family:var(--font-display); font-size:2.5rem; font-weight:800; color:var(--text-primary); letter-spacing:-0.03em; line-height:1;">$0<span style="font-size:1rem; color:var(--text-muted); font-weight:400;">/3 months</span></div>
+                <div style="font-size:0.85rem; color:var(--text-muted); margin:0.5rem 0 1.5rem;">Then $29/month — cancel anytime</div>
+                <ul style="list-style:none; display:flex; flex-direction:column; gap:0.65rem; margin-bottom:1.75rem;">
+                    <li style="display:flex; align-items:flex-start; gap:10px; font-size:0.875rem; color:var(--text-body);">
+                        <div class="perk-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,6 5,9 10,3"/></svg></div>
+                        Real-time card testing detection
+                    </li>
+                    <li style="display:flex; align-items:flex-start; gap:10px; font-size:0.875rem; color:var(--text-body);">
+                        <div class="perk-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,6 5,9 10,3"/></svg></div>
+                        Full dashboard & attack logs
+                    </li>
+                    <li style="display:flex; align-items:flex-start; gap:10px; font-size:0.875rem; color:var(--text-body);">
+                        <div class="perk-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,6 5,9 10,3"/></svg></div>
+                        Priority founding team support
+                    </li>
+                    <li style="display:flex; align-items:flex-start; gap:10px; font-size:0.875rem; color:var(--text-body);">
+                        <div class="perk-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,6 5,9 10,3"/></svg></div>
+                        Shape the product roadmap
+                    </li>
+                </ul>
+                <a href="#access" class="btn-primary" style="width:100%; justify-content:center; font-size:0.95rem; padding:0.8rem 1.5rem;">
+                    Start Free — 3 Months
+                </a>
+            </div>
+
+            <!-- Pro Plan -->
+            <div class="step-card reveal" style="text-align:left; padding:2rem; border-color:var(--border-orange); position:relative; overflow:hidden; transition-delay:0.1s;">
+                <div style="position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg, transparent, var(--orange), transparent);"></div>
+                <div style="font-family:var(--font-mono); font-size:0.72rem; color:var(--orange); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:1rem;">Pro — Coming Soon</div>
+                <div style="font-family:var(--font-display); font-size:2.5rem; font-weight:800; color:var(--text-primary); letter-spacing:-0.03em; line-height:1;">$29<span style="font-size:1rem; color:var(--text-muted); font-weight:400;">/month</span></div>
+                <div style="font-size:0.85rem; color:var(--text-muted); margin:0.5rem 0 1.5rem;">Per store — no traffic limits</div>
+                <ul style="list-style:none; display:flex; flex-direction:column; gap:0.65rem; margin-bottom:1.75rem;">
+                    <li style="display:flex; align-items:flex-start; gap:10px; font-size:0.875rem; color:var(--text-body);">
+                        <div class="perk-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,6 5,9 10,3"/></svg></div>
+                        Everything in Early Access
+                    </li>
+                    <li style="display:flex; align-items:flex-start; gap:10px; font-size:0.875rem; color:var(--text-body);">
+                        <div class="perk-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,6 5,9 10,3"/></svg></div>
+                        Multi-signal behavioral engine
+                    </li>
+                    <li style="display:flex; align-items:flex-start; gap:10px; font-size:0.875rem; color:var(--text-body);">
+                        <div class="perk-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,6 5,9 10,3"/></svg></div>
+                        BIN intelligence database
+                    </li>
+                    <li style="display:flex; align-items:flex-start; gap:10px; font-size:0.875rem; color:var(--text-body);">
+                        <div class="perk-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,6 5,9 10,3"/></svg></div>
+                        Permanent IP blacklist
+                    </li>
+                    <li style="display:flex; align-items:flex-start; gap:10px; font-size:0.875rem; color:var(--text-body);">
+                        <div class="perk-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,6 5,9 10,3"/></svg></div>
+                        Multi-store management
+                    </li>
+                </ul>
+                <button class="btn-primary" style="width:100%; justify-content:center; font-size:0.95rem; padding:0.8rem 1.5rem; opacity:0.6; cursor:not-allowed;" disabled>
+                    Notify Me at Launch
+                </button>
+            </div>
+
+        </div>
+    </section>
+
+    <div class="section-divider"><hr></div>
+
+    <!-- EARLY ACCESS + FORM -->
     <section class="access-section" id="access">
         <div class="access-wrapper">
 
@@ -1932,7 +2638,10 @@
                         <div class="form-card-sub">Takes 30 seconds. Protects your store forever.</div>
                     </div>
 
-                    <form id="register-form">
+                                  <form id="register-form">
+                    <div style="opacity:0;position:absolute;top:0;left:0;height:0;width:0;z-index:-1;overflow:hidden;" aria-hidden="true">
+                        <input type="text" name="website" tabindex="-1" autocomplete="off">
+                    </div>
                         <div class="form-group">
                             <label for="email">Email address <span class="req">*</span></label>
                             <input type="email" id="email" name="email" placeholder="you@yourstore.com" autocomplete="email" required>
@@ -1941,6 +2650,14 @@
                             <label for="storeUrl">Store URL <span class="opt">(optional)</span></label>
                             <input type="text" id="storeUrl" name="storeUrl" placeholder="https://yourstore.com" autocomplete="url">
                         </div>
+                        <!-- Turnstile widget — invisible to real users, lethal to bots -->
+                        <div class="cf-turnstile"
+                             data-sitekey="0x4AAAAAADLm6BfBxpn1wxuY"
+                             data-theme="dark"
+                             data-size="flexible"
+                             style="margin-bottom:0.75rem;">
+                        </div>
+
                         <button type="submit" class="form-submit" id="submit-btn">
                             <svg viewBox="0 0 24 24">
                                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
@@ -1954,6 +2671,13 @@
                     <div id="result" style="display:none;">
 
                         <div class="result-label">🔑 Your API Key</div>
+                        <div style="display:flex;align-items:center;gap:8px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:0.8rem;color:#fca5a5;">
+                            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;flex-shrink:0;stroke:#f87171;">
+                                <path d="M8 1L2 3.5v4C2 11 5 13.9 8 15c3-1.1 6-4 6-7.5v-4L8 1z"/>
+                                <line x1="8" y1="6" x2="8" y2="8"/><circle cx="8" cy="10.5" r="0.5" fill="#f87171"/>
+                            </svg>
+                            <span><strong style="color:#fca5a5;">Never share this key.</strong> It grants full access to your store's protection — treat it like a password.</span>
+                        </div>
 
                         <!-- Key box + copy button -->
                         <div class="api-key-wrapper">
@@ -1972,15 +2696,19 @@
                                 <path d="M8 1L2 3.5v4C2 11 5 13.9 8 15c3-1.1 6-4 6-7.5v-4L8 1z"/>
                                 <polyline points="5,8 7,10 11,6"/>
                             </svg>
-                            We've also sent this key to your email — it's safe if you close this page.
+                            Copy this key now and save it somewhere safe — it won't be shown again after you close this page.
                         </div>
 
                         <div class="result-label" style="margin-top:1.5rem;">Next Steps</div>
-                        <ol class="steps-list">
-                            <li>
-                                <div class="step-num">1</div>
-                                <span><strong style="color:var(--text-primary);">Install the plugin</strong> — Download <code style="font-family:var(--font-mono);font-size:0.82em;color:var(--orange);">chargeguard-1.0.0.zip</code> and upload via <em>Plugins → Add New → Upload Plugin</em>.</span>
-                            </li>
+                        <ol class="steps-list" role="list">
+                           <li>
+    <div class="step-num">1</div>
+    <span>
+        <strong style="color:var(--text-primary);">Install the plugin</strong> — 
+        <a id="plugin-download-link" href="https://github.com/amr2883/chargeguard-plugin/releases/latest/download/chargeguard.zip" download style="color:var(--orange); text-decoration:underline; text-underline-offset:3px;">Download the plugin (v1.0.4)</a> 
+        — upload it via Plugins &#8594; Add New &#8594; Upload Plugin.
+    </span>
+</li>
                             <li>
                                 <div class="step-num">2</div>
                                 <span><strong style="color:var(--text-primary);">Activate & configure</strong> — Go to <em>WooCommerce → Settings → ChargeGuard</em> and paste your key above.</span>
@@ -2001,8 +2729,7 @@
         </div>
     </section>
 
-
-    </main><!-- /main -->
+</main><!-- /main -->
 
     <!-- ═══════════════════════════════════════════════
          FOOTER
@@ -2029,13 +2756,13 @@
             </div>
 
             <div>
-                <div class="footer-col-title">Product</div>
-                <ul class="footer-links">
-                    <li><a href="features.html">Features</a></li>
-                    <li><a href="pricing.html">Pricing</a></li>
-                    <li><a href="#access">Early Access</a></li>
-                    <li><a href="about.html">About Us</a></li>
-                </ul>
+             <div class="footer-col-title">Product</div>
+<ul class="footer-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#access">Early Access</a></li>
+    <li><a href="#access">About Us</a></li>
+</ul>
             </div>
 
             <div>
@@ -2064,7 +2791,7 @@
     <!-- 1. Form JS -->
     <script>
         (function() {
-            const API_REGISTER_URL = 'https://api.chargeguard.io/api/risk/tenants/register';
+            const API_REGISTER_URL = 'https://chargeguard-api.onrender.com/api/risk/tenants/register';
 
             // ════════════════════════════════════════════════════════════════════════
             // FETCH TIMEOUT — 15 seconds
@@ -2159,6 +2886,10 @@
 
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
+                // Honeypot check — bots fill hidden fields, humans don't
+                // Optional chaining (?.) guards against null if DOM parsing
+                // fails or the element is removed — prevents TypeError crash
+                if (document.querySelector('input[name="website"]')?.value) return;
                 hideMessage();
                 resultEl.style.display = 'none';
 
@@ -2196,14 +2927,32 @@
                 );
 
                 try {
+                    // Read Turnstile token — set by Cloudflare widget automatically
+                    const turnstileInput = document.querySelector(
+                        'input[name="cf-turnstile-response"]'
+                    );
+                    const turnstileToken = turnstileInput?.value || '';
+
+                    // Block submission if token is missing — widget not loaded yet
+                    if (!turnstileToken) {
+                        showMessage(
+                            'Security check not ready yet — please wait a moment and try again.',
+                            'error'
+                        );
+                        resetButton();
+                        clearTimeout(timeoutId);
+                        return;
+                    }
+
                     const response = await fetch(API_REGISTER_URL, {
                         method:  'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body:    JSON.stringify({
                             email,
-                            storeUrl: normalizedUrl   // always https://, always clean, or null
+                            storeUrl:        normalizedUrl,
+                            turnstileToken               // ← verified server-side
                         }),
-                        signal: controller.signal     // ← AbortController hookup
+                        signal: controller.signal
                     });
 
                     clearTimeout(timeoutId); // ✅ success path — disarm the timer
@@ -2211,7 +2960,22 @@
                     const data = await response.json();
 
                     if (response.ok) {
-                        apiKeyDisplay.textContent = data.apiKey;
+                        // Store full key in closure — never written to DOM
+                        const fullKey = data.apiKey || '';
+                        const masked  = fullKey.slice(0, 8) + '••••••••••••••';
+                        apiKeyDisplay.textContent        = masked;
+                        apiKeyDisplay.dataset.masked     = 'true';
+
+                        // Copy button gets the real key via closure
+                        const copyBtn = document.getElementById('copy-btn');
+                        if (copyBtn) copyBtn.dataset.fullKey = fullKey;
+
+                        // Disable text selection on masked box — selecting ••••
+                        // gives users false confidence they copied a usable key
+                        apiKeyDisplay.style.userSelect = 'none';
+                        apiKeyDisplay.style.cursor     = 'default';
+                        apiKeyDisplay.title = 'Use the Copy button to copy your full API key';
+
                         resultEl.style.display    = 'block';
                         form.style.display        = 'none';
                         showMessage('You\'re in! Your API key is ready below.', 'success');
@@ -2244,6 +3008,81 @@
                     resetButton();
                 }
             });
+        })();
+    </script>
+
+    <!-- Pricing Toggle -->
+    <script>
+        (function () {
+            'use strict';
+            const PLANS = {
+                starter: { mo: 0,  yr: 0,   total: 0,   save: 0   },
+                pro:     { mo: 19, yr: 13,  total: 159, save: 69  },
+                agency:  { mo: 49, yr: 33,  total: 399, save: 189 }
+            };
+            const toggle    = document.getElementById('billing-toggle');
+            const lblMo     = document.getElementById('lbl-monthly');
+            const lblYr     = document.getElementById('lbl-annual');
+            const saveBadge = document.getElementById('save-badge');
+            const els = {
+                starter: { price: document.getElementById('price-starter'), note: document.getElementById('note-starter'), tag: null },
+                pro:     { price: document.getElementById('price-pro'),     note: document.getElementById('note-pro'),     tag: document.getElementById('tag-pro')    },
+                agency:  { price: document.getElementById('price-agency'),  note: document.getElementById('note-agency'),  tag: document.getElementById('tag-agency') }
+            };
+            let isAnnual = true;
+            function countTo(el, target) {
+                if (!el) return;
+                const from  = parseInt(el.textContent, 10) || 0;
+                const diff  = target - from;
+                const steps = 18;
+                let   step  = 0;
+                const t = setInterval(() => {
+                    step++;
+                    const progress = 1 - Math.pow(1 - step / steps, 2);
+                    el.textContent = Math.round(from + diff * progress);
+                    if (step >= steps) { el.textContent = target; clearInterval(t); }
+                }, 28);
+            }
+            function render() {
+                Object.entries(PLANS).forEach(([key, p]) => {
+                    const e = els[key];
+                    if (!e || !e.price) return;
+                    countTo(e.price, isAnnual ? p.yr : p.mo);
+                    if (e.note) {
+                        if (isAnnual && p.total > 0) {
+                            e.note.textContent = 'Billed $' + p.total + '/year — 2 months free';
+                            e.note.classList.remove('hidden');
+                        } else { e.note.classList.add('hidden'); }
+                    }
+                    if (e.tag) {
+                        if (isAnnual && p.save > 0) {
+                            e.tag.textContent = 'Save $' + p.save;
+                            e.tag.classList.remove('hidden');
+                        } else { e.tag.classList.add('hidden'); }
+                    }
+                });
+                if (isAnnual) {
+                    toggle.classList.add('is-annual');
+                    toggle.setAttribute('aria-checked', 'true');
+                    lblMo.classList.remove('active');
+                    lblYr.classList.add('active');
+                    if (saveBadge) saveBadge.classList.remove('hidden');
+                } else {
+                    toggle.classList.remove('is-annual');
+                    toggle.setAttribute('aria-checked', 'false');
+                    lblMo.classList.add('active');
+                    lblYr.classList.remove('active');
+                    if (saveBadge) saveBadge.classList.add('hidden');
+                }
+            }
+            function flip() { isAnnual = !isAnnual; render(); }
+            if (toggle) {
+                toggle.addEventListener('click', flip);
+                toggle.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); flip(); }
+                });
+            }
+            render();
         })();
     </script>
 
@@ -2514,7 +3353,7 @@
             const spotsEl = document.getElementById('spots-left');
             const noteEl  = document.getElementById('scarcity-note');
             const TOTAL     = 10;
-            const MIN_TAKEN = 5;          // floor — bar always looks meaningfully filled
+            const MIN_TAKEN = 1;          // floor — starts honest, fills as cohort fills
             const MAX_TAKEN = TOTAL - 1;  // ceiling — always show ≥1 spot open
 
             // ── Monotonic epoch-based progression (never goes backwards — ever) ──────
@@ -2529,11 +3368,15 @@
             // then stays clamped at MAX_TAKEN indefinitely — always ≥1 spot open.
             //
             // Timeline (UTC, from EPOCH — current cohort launched 6 May 2026):
-            //   Day  0–1 → taken = 5  (5 spots remaining)
-            //   Day  2–3 → taken = 6  (4 spots remaining)
-            //   Day  4–5 → taken = 7  (3 spots remaining)
-            //   Day  6–7 → taken = 8  (2 spots remaining)
-            //   Day  8+  → taken = 9  (1 spot remaining — clamped forever)
+            //   Day  0–1 → taken = 1  (9 spots remaining)
+            //   Day  2–3 → taken = 2  (8 spots remaining)
+            //   Day  4–5 → taken = 3  (7 spots remaining)
+            //   Day  6–7 → taken = 4  (6 spots remaining)
+            //   Day  8–9 → taken = 5  (5 spots remaining)
+            //   Day 10–11→ taken = 6  (4 spots remaining)
+            //   Day 12–13→ taken = 7  (3 spots remaining)
+            //   Day 14–15→ taken = 8  (2 spots remaining)
+            //   Day 16+  → taken = 9  (1 spot remaining — clamped forever)
             function computeTaken() {
                 // ④ FIX: EPOCH now anchored to current cohort launch — 6 May 2026.
                 // Previous value (6 Jan 2025) caused taken to clamp at MAX_TAKEN
@@ -2589,7 +3432,7 @@
                 if (noteEl) {
                     noteEl.textContent = remaining === 1
                         ? '⚡ Final spot — closes when claimed'
-                        : taken + ' of ' + TOTAL + ' spots reserved in this cohort';
+                        : taken + ' of ' + TOTAL + ' early access spots claimed';
                     requestAnimationFrame(() => {
                         requestAnimationFrame(() => {
                             noteEl.classList.add('is-visible');
@@ -2616,12 +3459,12 @@
     <!-- 5. Copy API Key -->
     <script>
         (function() {
-            // Runs after result is revealed
             document.addEventListener('click', function(e) {
                 const btn = e.target.closest('#copy-btn');
                 if (!btn) return;
 
-                const key = document.getElementById('api-key-display').textContent;
+                // Read full key from data attribute — not from visible DOM text
+                const key = btn.dataset.fullKey || '';
                 if (!key) return;
 
                 navigator.clipboard.writeText(key).then(() => {
@@ -2637,12 +3480,14 @@
                             '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>';
                     }, 2500);
                 }).catch(() => {
-                    // Fallback for older browsers
-                    const range = document.createRange();
-                    range.selectNodeContents(document.getElementById('api-key-display'));
-                    const sel = window.getSelection();
-                    sel.removeAllRanges();
-                    sel.addRange(range);
+                    // Fallback for older browsers — copy full key, not masked text
+                    const tempEl = document.createElement('textarea');
+                    tempEl.value = key;
+                    tempEl.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0;';
+                    document.body.appendChild(tempEl);
+                    tempEl.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(tempEl);
                 });
             });
         })();
@@ -2853,3 +3698,4 @@
 
 </body>
 </html>
+

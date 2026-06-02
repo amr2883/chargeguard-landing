@@ -1,26 +1,171 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Terms of Service - ChargeGuard</title>
-  <style>
-    body { font-family: Arial, sans-serif; background: #0f172a; color: #e2e8f0; padding: 40px; max-width: 800px; margin: auto; }
-    h1 { color: #f97316; }
-    a { color: #f97316; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terms of Service — ChargeGuard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --orange: #f97316;
+  --bg: #0b1121;
+  --card: #111827;
+  --border: rgba(255,255,255,0.07);
+  --text: #cbd5e1;
+  --text-primary: #f1f5f9;
+  --text-muted: #64748b;
+  --font-display: 'Syne', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+body { font-family: var(--font-body); background: var(--bg); color: var(--text); line-height: 1.7; }
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: linear-gradient(rgba(249,115,22,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(249,115,22,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none; z-index: 0;
+}
+nav {
+  display: flex; align-items: center; gap: 10px;
+  padding: 0 clamp(1.25rem, 5vw, 2.5rem);
+  height: 64px;
+  background: rgba(11,17,33,0.8);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 100;
+}
+.logo-icon {
+  width: 28px; height: 28px;
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+}
+.logo-icon svg { width: 16px; height: 16px; fill: white; }
+.logo-text { font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; color: var(--text-primary); text-decoration: none; }
+.logo-text span { color: var(--orange); }
+.container { max-width: 760px; margin: 0 auto; padding: clamp(3rem,6vw,5rem) clamp(1.25rem,5vw,2.5rem); position: relative; z-index: 1; }
+.page-label { font-size: 0.72rem; font-family: monospace; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; }
+.page-label::before { content: ''; display: block; width: 24px; height: 1px; background: var(--orange); }
+h1 { font-family: var(--font-display); font-size: clamp(1.8rem,4vw,2.4rem); font-weight: 700; color: var(--text-primary); letter-spacing: -0.025em; margin-bottom: 0.5rem; }
+.effective { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 3rem; }
+.section { margin-bottom: 2.5rem; padding-bottom: 2.5rem; border-bottom: 1px solid var(--border); }
+.section:last-of-type { border-bottom: none; }
+h2 { font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1rem; display: flex; align-items: center; gap: 10px; }
+h2 .num { font-size: 0.72rem; font-family: monospace; color: var(--orange); background: rgba(249,115,22,0.1); border: 1px solid rgba(249,115,22,0.2); padding: 2px 8px; border-radius: 100px; }
+p { font-size: 0.95rem; color: var(--text); margin-bottom: 0.85rem; }
+p:last-child { margin-bottom: 0; }
+ul { padding-left: 1.25rem; margin-bottom: 0.85rem; }
+ul li { font-size: 0.95rem; color: var(--text); margin-bottom: 0.4rem; }
+a { color: var(--orange); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.highlight { background: rgba(249,115,22,0.08); border: 1px solid rgba(249,115,22,0.2); border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 0.85rem; font-size: 0.9rem; }
+.back { display: inline-flex; align-items: center; gap: 6px; color: var(--text-muted); font-size: 0.875rem; text-decoration: none; margin-top: 3rem; transition: color 0.2s; }
+.back:hover { color: var(--text-primary); }
+footer { text-align: center; padding: 2rem; font-size: 0.8rem; color: var(--text-muted); border-top: 1px solid var(--border); position: relative; z-index: 1; }
+</style>
 </head>
 <body>
+<nav>
+  <div class="logo-icon"><svg viewBox="0 0 24 24"><path d="M12 2L4 6v6c0 5.25 3.5 10.15 8 11.4C16.5 22.15 20 17.25 20 12V6L12 2zm-1 13l-3-3 1.4-1.4L11 12.2l4.6-4.6L17 9l-6 6z"/></svg></div>
+  <a href="index.html" class="logo-text">Charge<span>Guard</span></a>
+</nav>
+
+<div class="container">
+  <div class="page-label">Legal</div>
   <h1>Terms of Service</h1>
-  <p><strong>Effective Date:</strong> May 2026</p>
-  <h2>1. Service Description</h2>
-  <p>ChargeGuard provides a real-time fraud detection API for WooCommerce stores.</p>
-  <h2>2. Usage</h2>
-  <p>You agree to use the service in compliance with all applicable laws. The service is provided "as is".</p>
-  <h2>3. Limitation of Liability</h2>
-  <p>ChargeGuard shall not be liable for any indirect damages resulting from the use of the service.</p>
-  <h2>4. Contact</h2>
-  <p>For questions: <a href="mailto:support@chargeguard.app">support@chargeguard.app</a></p>
-  <p><a href="index.html">← Back to Home</a></p>
+  <p class="effective">Effective Date: May 9, 2026 · Last updated: May 9, 2026</p>
+
+  <div class="section">
+    <h2><span class="num">01</span> Agreement to Terms</h2>
+    <p>By accessing or using ChargeGuard ("Service", "we", "us"), you agree to be bound by these Terms of Service. If you do not agree, do not use the Service.</p>
+    <p>These Terms apply to all users, including WooCommerce store owners, developers, and agencies using ChargeGuard on behalf of clients.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">02</span> What ChargeGuard Does</h2>
+    <p>ChargeGuard provides a real-time fraud detection API designed to prevent card testing attacks on WooCommerce stores. The Service analyzes checkout signals — including IP reputation, device velocity, email patterns, and BIN data — to block fraudulent requests before they reach your payment gateway.</p>
+    <p>ChargeGuard operates as a plugin installed on your WordPress/WooCommerce installation, communicating with our cloud API using your unique API key.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">03</span> API Key & Account Security</h2>
+    <p>Upon registration, you receive a unique API key that grants access to the Service. You are solely responsible for:</p>
+    <ul>
+      <li>Keeping your API key confidential</li>
+      <li>All activity that occurs under your API key</li>
+      <li>Immediately notifying us at <a href="mailto:support@chargeguard.io">support@chargeguard.io</a> if you suspect unauthorized use</li>
+    </ul>
+    <div class="highlight">⚠️ Never share your API key publicly or commit it to version control. ChargeGuard will never ask for your API key via email or chat.</div>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">04</span> Acceptable Use</h2>
+    <p>You agree to use the Service only for its intended purpose — protecting WooCommerce stores from card testing fraud. You must not:</p>
+    <ul>
+      <li>Use the Service to process or store payment card data</li>
+      <li>Attempt to reverse-engineer, scrape, or abuse the API</li>
+      <li>Resell or sublicense the Service without written permission</li>
+      <li>Use the Service in violation of any applicable law or regulation</li>
+      <li>Deliberately send fraudulent or misleading signals to the API</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">05</span> Early Access & Pricing</h2>
+    <p>During the Early Access period, the first 10 accepted stores receive 3 months of full protection at no cost. After the Early Access period, continued use is subject to the pricing in effect at that time ($29/month per store).</p>
+    <p>We will provide at least 30 days' notice before any billing begins. You may cancel at any time before billing commences with no obligation.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">06</span> Service Availability</h2>
+    <p>We aim to provide a reliable service but do not guarantee 100% uptime. The Service is provided on a commercially reasonable efforts basis. Planned maintenance will be communicated in advance where possible.</p>
+    <p>ChargeGuard is not responsible for losses arising from service interruptions, gateway downtime, or events outside our reasonable control.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">07</span> Disclaimer of Warranties</h2>
+    <p>The Service is provided <strong style="color:var(--text-primary);">"as is"</strong> and <strong style="color:var(--text-primary);">"as available"</strong> without warranties of any kind, express or implied. ChargeGuard does not warrant that:</p>
+    <ul>
+      <li>The Service will detect or prevent every card testing attack</li>
+      <li>The Service will be error-free or uninterrupted</li>
+      <li>Any specific fraud detection accuracy rate will be maintained</li>
+    </ul>
+    <p>Fraud detection is probabilistic by nature. ChargeGuard significantly reduces fraud risk but cannot guarantee complete elimination.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">08</span> Limitation of Liability</h2>
+    <p>To the maximum extent permitted by applicable law, ChargeGuard and its team members shall not be liable for any indirect, incidental, special, consequential, or punitive damages, including but not limited to:</p>
+    <ul>
+      <li>Lost revenue or gateway fees from attacks that bypassed the Service</li>
+      <li>Business interruption or loss of data</li>
+      <li>Costs of substitute services</li>
+    </ul>
+    <p>Our total aggregate liability to you shall not exceed the amount you paid for the Service in the 3 months preceding the claim, or $50, whichever is greater.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">09</span> Termination</h2>
+    <p>You may stop using the Service at any time by deactivating the plugin and ceasing API calls. We may suspend or terminate your access immediately if you violate these Terms or engage in activity that harms other users or the integrity of the Service.</p>
+    <p>Upon termination, your API key will be deactivated and your data will be handled per our Privacy Policy.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">10</span> Changes to These Terms</h2>
+    <p>We may update these Terms from time to time. We will notify registered users by email at least 14 days before material changes take effect. Continued use of the Service after changes constitutes acceptance of the new Terms.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">11</span> Contact</h2>
+    <p>For questions about these Terms, contact us at: <a href="mailto:support@chargeguard.io">support@chargeguard.io</a></p>
+  </div>
+
+  <a href="index.html" class="back">← Back to ChargeGuard</a>
+</div>
+
+<footer>© 2026 ChargeGuard. All rights reserved.</footer>
 </body>
 </html>
