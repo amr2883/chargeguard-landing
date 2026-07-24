@@ -1,0 +1,1731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Upgrade — ChargeGuard</title>
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%230b1121'/><path d='M16 4L6 8v7c0 6.5 4.5 10.8 10 12.5C21.5 25.8 26 21.5 26 15V8L16 4z' fill='%23f97316' opacity='.9'/><path d='M11 16l3.5 3.5L21 12' stroke='white' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round' fill='none'/></svg>" type="image/svg+xml">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    /* ═══════════════════════════════════════════════
+       DESIGN TOKENS — identical to index.html
+    ═══════════════════════════════════════════════ */
+    :root {
+      --orange:        #f97316;
+      --orange-dark:   #ea580c;
+      --orange-glow:   rgba(249,115,22,0.15);
+      --orange-glow-s: rgba(249,115,22,0.06);
+      --red:           #ef4444;
+      --red-bg:        rgba(239,68,68,0.1);
+      --green:         #10b981;
+      --green-bg:      rgba(16,185,129,0.1);
+      --green-border:  rgba(16,185,129,0.25);
+      --amber:         #f59e0b;
+      --blue:          #63b3ed;
+
+      --bg-deepest:    #020617;
+      --bg-base:       #0b1121;
+      --bg-card:       #111827;
+      --bg-card-hover: #141e2e;
+      --bg-input:      #0d1526;
+
+      --border:        rgba(255,255,255,0.07);
+      --border-orange: rgba(249,115,22,0.3);
+      --border-hover:  rgba(255,255,255,0.12);
+
+      --text-primary:  #f1f5f9;
+      --text-body:     #cbd5e1;
+      --text-muted:    #64748b;
+      --text-faint:    #334155;
+
+      --font-display:  'Syne', sans-serif;
+      --font-body:     'DM Sans', sans-serif;
+      --font-mono:     'JetBrains Mono', monospace;
+
+      --radius-sm:     8px;
+      --radius-md:     12px;
+      --radius-lg:     20px;
+      --radius-xl:     28px;
+
+      --transition:    all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      --shadow-orange: 0 0 40px rgba(249,115,22,0.12);
+      --shadow-card:   0 4px 24px rgba(0,0,0,0.4);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { -webkit-font-smoothing: antialiased; }
+
+    body {
+      font-family: var(--font-body);
+      background-color: var(--bg-base);
+      color: var(--text-body);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* Grid background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(249,115,22,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(249,115,22,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: -20%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 700px;
+      height: 500px;
+      background: radial-gradient(ellipse at center, rgba(249,115,22,0.07) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Navbar ── */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 clamp(1.25rem, 4vw, 2.5rem);
+      height: 64px;
+      background: rgba(11,17,33,0.8);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      z-index: 10;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .nav-logo-icon {
+      width: 30px;
+      height: 30px;
+      background: linear-gradient(135deg, var(--orange) 0%, var(--orange-dark) 100%);
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nav-logo-icon svg { width: 17px; height: 17px; fill: white; }
+
+    .nav-logo-text {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+    }
+
+    .nav-logo-text span { color: var(--orange); }
+
+    .nav-back {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .nav-back:hover { color: var(--text-primary); }
+
+    .nav-back svg {
+      width: 16px;
+      height: 16px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* ── Main layout ── */
+    .page-main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(2rem, 5vw, 4rem) clamp(1rem, 4vw, 2rem);
+      position: relative;
+      z-index: 1;
+    }
+
+    .upgrade-wrapper {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      max-width: 900px;
+      width: 100%;
+      align-items: start;
+    }
+
+    /* ── Left: Plan summary ── */
+    .plan-summary {
+      padding-top: 0.5rem;
+    }
+
+    .step-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 2rem;
+    }
+
+    .step-dot {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 500;
+    }
+
+    .step-dot.active {
+      background: var(--orange);
+      color: white;
+      box-shadow: 0 0 12px rgba(249,115,22,0.4);
+    }
+
+    .step-dot.inactive {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    .step-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+      max-width: 32px;
+    }
+
+    .step-meta {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .step-name {
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      color: var(--text-faint);
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      margin-top: 5px;
+      white-space: nowrap;
+    }
+
+    .step-name.active-label {
+      color: var(--orange);
+    }
+
+    .plan-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .plan-eyebrow::before {
+      content: '';
+      width: 20px;
+      height: 1px;
+      background: var(--orange);
+    }
+
+    .plan-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      font-weight: 800;
+      color: var(--text-primary);
+      line-height: 1.1;
+      letter-spacing: -0.025em;
+      margin-bottom: 1rem;
+    }
+
+    .plan-title .highlight { color: var(--orange); }
+
+    /* Plan card */
+    .plan-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-orange);
+      border-radius: var(--radius-xl);
+      padding: 1.75rem;
+      margin-bottom: 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .plan-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--orange), transparent);
+    }
+
+    .plan-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1.25rem;
+    }
+
+    .plan-name {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.2rem;
+    }
+
+    .plan-cycle {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    .plan-price-block { text-align: right; }
+
+    .plan-price {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--orange);
+      letter-spacing: -0.03em;
+      line-height: 1;
+    }
+
+    .plan-price-sub {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      margin-top: 0.2rem;
+    }
+
+    .card-annual-note {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      margin-top: 0.25rem;
+      opacity: 0.8;
+    }
+
+    .plan-save-tag {
+      display: inline-block;
+      background: rgba(16,185,129,0.12);
+      border: 1px solid rgba(16,185,129,0.25);
+      color: #6ee7b7;
+      font-size: 0.65rem;
+      font-family: var(--font-mono);
+      padding: 0.15rem 0.5rem;
+      border-radius: 100px;
+      margin-top: 0.3rem;
+    }
+
+    .plan-divider {
+      height: 1px;
+      background: rgba(249,115,22,0.15);
+      margin-bottom: 1.1rem;
+    }
+
+    .plan-features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+
+    .plan-features li {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      font-size: 0.85rem;
+      color: var(--text-body);
+    }
+
+    .feat-check {
+      flex-shrink: 0;
+      margin-top: 1px;
+      width: 16px;
+      height: 16px;
+      background: rgba(249,115,22,0.12);
+      border: 1px solid rgba(249,115,22,0.25);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .feat-check svg {
+      width: 8px;
+      height: 8px;
+      stroke: var(--orange);
+      fill: none;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* Guarantee strip */
+    .guarantee-strip {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--green-bg);
+      border: 1px solid var(--green-border);
+      border-radius: var(--radius-md);
+      padding: 0.9rem 1.1rem;
+    }
+
+    .guarantee-strip svg {
+      flex-shrink: 0;
+      width: 18px;
+      height: 18px;
+      stroke: var(--green);
+      fill: none;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .guarantee-strip span {
+      font-size: 0.82rem;
+      color: #6ee7b7;
+      line-height: 1.5;
+    }
+
+    /* ── Upgrade page social proof quote ── */
+    .upgrade-quote {
+      margin-top: 1rem;
+      background: rgba(249,115,22,0.03);
+      border: 1px solid rgba(249,115,22,0.1);
+      border-radius: var(--radius-md);
+      padding: 1.1rem 1.25rem;
+      position: relative;
+    }
+
+    .upgrade-quote-mark {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--orange);
+      opacity: 0.25;
+      line-height: 1;
+      margin-bottom: 0.25rem;
+      letter-spacing: -0.05em;
+    }
+
+    .upgrade-quote-text {
+      font-size: 0.8rem;
+      color: var(--text-body);
+      line-height: 1.65;
+      font-style: italic;
+      margin-bottom: 0.85rem;
+    }
+
+    .upgrade-quote-author {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .upgrade-quote-avatar {
+      width: 26px;
+      height: 26px;
+      background: rgba(249,115,22,0.1);
+      border: 1px solid rgba(249,115,22,0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 0.7rem;
+      color: var(--orange);
+      flex-shrink: 0;
+    }
+
+    .upgrade-quote-name {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      font-family: var(--font-display);
+      line-height: 1.3;
+    }
+
+    .upgrade-quote-role {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      margin-top: 1px;
+    }
+
+    /* ── Right: Form card ── */
+    .form-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 2.25rem;
+      box-shadow: var(--shadow-card);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .form-card-title {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.35rem;
+      letter-spacing: -0.02em;
+    }
+
+    .form-card-sub {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 1.75rem;
+      line-height: 1.5;
+    }
+
+    .form-group { margin-bottom: 1rem; }
+
+    .form-group label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--text-body);
+      margin-bottom: 0.45rem;
+    }
+
+    .field-hint {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-bottom: 0.45rem;
+      line-height: 1.5;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px 15px;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      transition: var(--transition);
+      outline: none;
+    }
+
+    .form-group input::placeholder { color: var(--text-faint); }
+    .form-group input:hover { border-color: var(--border-hover); }
+
+    .form-group input:focus {
+      border-color: var(--orange);
+      box-shadow: 0 0 0 3px rgba(249,115,22,0.12);
+      background: rgba(249,115,22,0.02);
+    }
+
+    .form-group input.input-error {
+      border-color: rgba(239,68,68,0.6);
+      box-shadow: 0 0 0 3px rgba(239,68,68,0.08);
+    }
+
+    /* Submit button */
+    .btn-submit {
+      width: 100%;
+      padding: 13px 24px;
+      background: var(--orange);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-md);
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: var(--transition);
+      letter-spacing: 0.01em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 0 24px rgba(249,115,22,0.25);
+    }
+
+    .btn-submit:hover:not(:disabled) {
+      background: var(--orange-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 0 36px rgba(249,115,22,0.4);
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .btn-submit svg {
+      width: 17px; height: 17px;
+      stroke: white; fill: none;
+      stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+    }
+
+    /* Message box */
+    .message-box {
+      margin-top: 1rem;
+      padding: 12px 15px;
+      border-radius: var(--radius-sm);
+      font-size: 0.875rem;
+      line-height: 1.55;
+      display: none;
+      animation: fadeIn 0.25s ease;
+    }
+
+    .message-box.error {
+      display: block;
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.25);
+      color: #fca5a5;
+    }
+
+    .message-box.info {
+      display: block;
+      background: rgba(99,179,237,0.1);
+      border: 1px solid rgba(99,179,237,0.25);
+      color: #90cdf4;
+    }
+
+    .message-box.warning {
+      display: block;
+      background: rgba(245,158,11,0.1);
+      border: 1px solid rgba(245,158,11,0.25);
+      color: #fde68a;
+    }
+
+    /* Message action link */
+    .msg-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 0.75rem;
+      padding: 0.5rem 1rem;
+      background: rgba(239,68,68,0.15);
+      border: 1px solid rgba(239,68,68,0.3);
+      border-radius: var(--radius-sm);
+      color: #fca5a5;
+      font-size: 0.8rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: var(--transition);
+      cursor: pointer;
+    }
+
+    .msg-action:hover {
+      background: rgba(239,68,68,0.22);
+      border-color: rgba(239,68,68,0.45);
+    }
+
+    .msg-action.orange {
+      background: rgba(249,115,22,0.12);
+      border-color: rgba(249,115,22,0.3);
+      color: var(--orange);
+    }
+
+    .msg-action.orange:hover {
+      background: rgba(249,115,22,0.2);
+    }
+
+    /* Divider with text */
+    .divider-text {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin: 1.25rem 0;
+    }
+
+    .divider-text::before,
+    .divider-text::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .divider-text span {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    /* Register link */
+    .register-link {
+      text-align: center;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    .register-link a {
+      color: var(--orange);
+      text-decoration: none;
+      font-weight: 500;
+      border-bottom: 1px solid rgba(249,115,22,0.3);
+      transition: border-color 0.2s;
+    }
+
+    .register-link a:hover { border-color: var(--orange); }
+
+    /* ── Post-CTA trust strip ── */
+    .post-cta-strip {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 0.85rem;
+      flex-wrap: wrap;
+    }
+
+    .post-cta-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      line-height: 1;
+    }
+
+    .post-cta-item svg {
+      opacity: 0.7;
+      stroke: var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    .post-cta-review {
+      color: var(--text-muted);
+    }
+
+    .post-cta-dot {
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: var(--text-faint);
+      flex-shrink: 0;
+    }
+
+    /* Security note */
+    .security-note {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 1.1rem;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      text-align: center;
+      padding: 0.6rem 0.75rem;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+    }
+
+    .security-note svg {
+      width: 13px;
+      height: 13px;
+      stroke: var(--text-muted);
+      fill: none;
+      stroke-width: 2;
+      flex-shrink: 0;
+      margin-top: 1px;
+      opacity: 0.7;
+    }
+
+    /* Spinner */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spin { animation: spin 0.8s linear infinite; display: inline-block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Resend verification state ── */
+    .resend-section {
+      display: none;
+      margin-top: 0.75rem;
+    }
+
+    .resend-section.visible { display: block; }
+
+    .btn-resend {
+      width: 100%;
+      padding: 10px 16px;
+      background: transparent;
+      color: var(--text-body);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn-resend:hover:not(:disabled) {
+      border-color: var(--border-hover);
+      color: var(--text-primary);
+      background: rgba(255,255,255,0.04);
+    }
+
+    .btn-resend:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ── Verify guidance block ── */
+    .verify-guidance {
+      display: none;
+      margin-top: 0.85rem;
+      background: rgba(99,179,237,0.06);
+      border: 1px solid rgba(99,179,237,0.2);
+      border-radius: var(--radius-sm);
+      padding: 1rem 1.1rem;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .verify-guidance.visible {
+      display: block;
+    }
+
+    .verify-guidance-header {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #90cdf4;
+      margin-bottom: 0.75rem;
+    }
+
+    .verify-guidance-header svg {
+      stroke: #90cdf4;
+      flex-shrink: 0;
+    }
+
+    .verify-steps {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .verify-steps li {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 0.8rem;
+      color: var(--text-body);
+      line-height: 1.5;
+    }
+
+    .verify-step-num {
+      flex-shrink: 0;
+      width: 18px;
+      height: 18px;
+      background: rgba(99,179,237,0.15);
+      border: 1px solid rgba(99,179,237,0.25);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: #90cdf4;
+      margin-top: 1px;
+    }
+
+    .verify-spam-note {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      padding-top: 0.6rem;
+      border-top: 1px solid rgba(99,179,237,0.12);
+    }
+
+    .verify-spam-note svg {
+      stroke: var(--text-muted);
+      flex-shrink: 0;
+      opacity: 0.7;
+    }
+
+    /* ── Footer ── */
+    .page-footer {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--border);
+      padding: 1.25rem clamp(1.25rem, 5vw, 2.5rem);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .footer-copy {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 1.25rem;
+    }
+
+    .footer-links a {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover { color: var(--text-primary); }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .upgrade-wrapper {
+        grid-template-columns: 1fr;
+        gap: 1.75rem;
+      }
+      .plan-summary { order: 1; }
+      .form-card    { order: 2; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <a href="index.html" class="nav-brand">
+      <div class="nav-logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2L4 6v6c0 5.25 3.5 10.15 8 11.4C16.5 22.15 20 17.25 20 12V6L12 2zm-1 13l-3-3 1.4-1.4L11 12.2l4.6-4.6L17 9l-6 6z"/></svg>
+      </div>
+      <span class="nav-logo-text">Charge<span>Guard</span></span>
+    </a>
+    <a href="index.html#pricing" class="nav-back">
+      <svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      Back to pricing
+    </a>
+  </nav>
+
+  <!-- Main -->
+  <main class="page-main">
+    <div class="upgrade-wrapper">
+
+      <!-- Left: Plan Summary -->
+      <div class="plan-summary">
+
+        <!-- Step indicator — 3 labeled steps -->
+        <div class="step-indicator">
+          <div class="step-dot active">1</div>
+          <div class="step-meta">
+            <span class="step-name active-label">Your Email</span>
+          </div>
+          <div class="step-line"></div>
+          <div class="step-dot inactive">2</div>
+          <div class="step-meta">
+            <span class="step-name">Secure Payment</span>
+          </div>
+          <div class="step-line"></div>
+          <div class="step-dot inactive">3</div>
+          <div class="step-meta">
+            <span class="step-name">Shield Active</span>
+          </div>
+        </div>
+
+        <div class="plan-eyebrow" id="plan-eyebrow">Your selected plan</div>
+        <h1 class="plan-title">
+          Stop the next attack<br>
+          <span class="highlight" id="plan-title-name">before it costs you.</span>
+        </h1>
+
+        <!-- Plan card -->
+        <div class="plan-card">
+          <div class="plan-card-header">
+            <div>
+              <div class="plan-name" id="card-plan-name">Shield Pro</div>
+              <div class="plan-cycle" id="card-plan-cycle">Monthly billing</div>
+            </div>
+            <div class="plan-price-block">
+              <div class="plan-price" id="card-plan-price">$19</div>
+              <div class="plan-price-sub" id="card-plan-sub">/month</div>
+              <div class="plan-save-tag" id="card-save-tag" style="display:none;"></div>
+            </div>
+          </div>
+          <div style="margin-top:1rem;padding:0.875rem 1rem;background:rgba(99,179,237,0.08);border:1px solid rgba(99,179,237,0.25);border-radius:var(--radius-sm);border-left:3px solid #63b3ed;">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:0.45rem;">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#63b3ed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9,12 11,14 15,10"/>
+            </svg>
+            <span style="font-size:0.72rem;font-weight:600;color:#63b3ed;letter-spacing:0.05em;text-transform:uppercase;">Your store won't skip a beat</span>
+          </div>
+          <div style="font-size:0.82rem;color:#90cdf4;line-height:1.65;">
+            Installs like any WordPress plugin — your checkout keeps running, your speed stays the same, your customers notice nothing.
+            <span style="display:inline-flex;align-items:center;gap:4px;margin-left:4px;color:#6ee7b7;font-weight:500;">Removes in one click if it's ever not right for you.</span>
+          </div>
+        </div>
+        <div class="plan-divider"></div>
+          <ul class="plan-features" id="plan-features-list">
+            <!-- Populated by JS -->
+          </ul>
+        </div>
+
+        <!-- Guarantee -->
+        <div class="guarantee-strip">
+          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9,12 11,14 15,10"/></svg>
+          <span>30-Day Refund — if you don't see blocked attempts or your store gets hit with fees while ChargeGuard is active, one email and we refund every cent. No forms. No process.</span>
+        </div>
+
+        <!-- Social proof — proximity to decision point (NNGroup, 2020) -->
+        <div class="upgrade-quote">
+          <div class="upgrade-quote-mark">"</div>
+          <p class="upgrade-quote-text">The next attempt never reached Stripe. I only found out it happened when I opened the ChargeGuard log the next morning — three attempts, all blocked. Three months ago I had an attack and found out eleven days later when I opened my gateway statement. This time I knew before my coffee got cold.</p>
+          <div class="upgrade-quote-author">
+            <div class="upgrade-quote-avatar">S</div>
+            <div>
+              <div class="upgrade-quote-name">Illustrative example</div>
+              <div class="upgrade-quote-role">Based on early feedback from WooCommerce store owners using ChargeGuard</div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /plan-summary -->
+
+      <!-- Right: Form card -->
+      <div class="form-card">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:1.1rem;padding:0.65rem 0.9rem;background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.18);border-radius:var(--radius-sm);">
+  <div style="display:flex;margin-right:2px;">
+    <div style="width:24px;height:24px;border-radius:50%;background:rgba(249,115,22,0.15);border:2px solid var(--bg-card);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:0.62rem;font-weight:700;color:var(--orange);margin-left:-6px;flex-shrink:0;">M</div>
+    <div style="width:24px;height:24px;border-radius:50%;background:rgba(249,115,22,0.15);border:2px solid var(--bg-card);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:0.62rem;font-weight:700;color:var(--orange);margin-left:-6px;flex-shrink:0;">S</div>
+    <div style="width:24px;height:24px;border-radius:50%;background:rgba(249,115,22,0.15);border:2px solid var(--bg-card);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:0.62rem;font-weight:700;color:var(--orange);margin-left:-6px;flex-shrink:0;">R</div>
+    <div style="width:24px;height:24px;border-radius:50%;background:rgba(249,115,22,0.15);border:2px solid var(--bg-card);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:0.62rem;font-weight:700;color:var(--orange);margin-left:-6px;flex-shrink:0;">K</div>
+  </div>
+  <span style="font-size:0.78rem;color:#6ee7b7;line-height:1.4;"><strong style="color:var(--text-primary);font-weight:600;">Early access is open</strong> — handmade goods, digital products &amp; more, protected today</span>
+</div>
+<div class="form-card-title">One email. Then the bots stop.</div>
+        <div class="form-card-sub" id="form-subtitle">One email. Decide the next attack stops at attempt three — not on their statement.</div>
+
+        <div class="form-group">
+          <label for="email-input">Your account email</label>
+          <p class="field-hint">Enter the email you used to sign up — or any email if you're new. We'll handle the rest.</p>
+          <input
+            type="email"
+            id="email-input"
+            placeholder="you@yourstore.com"
+            autocomplete="email"
+            autocorrect="off"
+            autocapitalize="none"
+            spellcheck="false"
+          >
+          <p style="margin-top:0.4rem;font-size:0.7rem;color:var(--text-faint);line-height:1.5;">
+            🔒 Never shared or sold &nbsp;·&nbsp;
+            <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--text-muted);text-decoration:underline;text-underline-offset:3px;opacity:0.8;transition:opacity 0.2s;">Privacy Policy</a>.
+          </p>
+        </div>
+
+        <!-- micro-reassurance — Petty & Cacioppo ELM: repetition in new context deepens conviction -->
+        <div style="display:flex;align-items:center;gap:7px;padding:0.5rem 0.75rem;margin-bottom:0.6rem;border-radius:var(--radius-sm);background:rgba(99,179,237,0.04);border:1px solid rgba(99,179,237,0.12);">
+          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#63b3ed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;opacity:0.75;"><polyline points="20,6 9,17 4,12"/></svg>
+          <span style="font-size:0.75rem;color:#64748b;line-height:1.4;">Your store stays up during install — removes in one click if needed.</span>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:8px;background:rgba(249,115,22,0.05);border:1px solid rgba(249,115,22,0.15);border-radius:var(--radius-sm);padding:0.6rem 0.85rem;margin-bottom:0.85rem;">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="var(--orange)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;opacity:0.85;"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="m7 11v7a5 5 0 0110 0v4"/></svg>
+          <span style="font-size:0.75rem;color:var(--text-muted);line-height:1.5;">early access rate — <strong style="color:var(--orange);font-weight:500;">lock it in now.</strong> after launch, new accounts pay more — <strong style="color:var(--orange);font-weight:500;">yours never changes.</strong></span>
+        </div>
+        <button class="btn-submit" id="submit-btn" type="button">
+          <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          Continue to Payment
+        </button>
+
+        <div class="message-box" id="message-box"></div>
+
+        <!-- ── post-cta trust strip ── -->
+        <div class="post-cta-strip">
+          <span class="post-cta-item">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="m7 11v7a5 5 0 0110 0v4"/></svg>
+            secured checkout
+          </span>
+          <span class="post-cta-dot"></span>
+          <span class="post-cta-item">
+            <!-- paypal wordmark — official brand colors, no external image needed -->
+            <svg viewBox="0 0 80 20" width="42" height="11" xmlns="http://www.w3.org/2000/svg" aria-label="paypal">
+              <text x="0" y="15" font-family="arial,sans-serif" font-weight="700" font-size="14" fill="#003087">pay</text>
+              <text x="24" y="15" font-family="arial,sans-serif" font-weight="700" font-size="14" fill="#009cde">pal</text>
+            </svg>
+          </span>
+          <span class="post-cta-dot"></span>
+          <span class="post-cta-item post-cta-review">
+            review order before charge
+          </span>
+        </div>
+
+        <!-- ── Founder contact — hesitation zone (Baymard: users pause here) ── -->
+        <div style="text-align:center;margin-top:0.9rem;">
+          <a href="https://t.me/ChargeGuardd" target="_blank" rel="noopener"
+             style="display:inline-flex;align-items:center;gap:6px;font-size:0.78rem;color:var(--text-muted);text-decoration:none;transition:color 0.2s;padding:0.3rem 0;"
+             onmouseover="this.style.color='var(--orange)'"
+             onmouseout="this.style.color='var(--text-muted)'">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;opacity:0.7;">
+              <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+            </svg>
+            A question before you pay? <strong style="color:var(--orange);font-weight:500;">Amr replies on Telegram — typically within the hour</strong>
+          </a>
+        </div>
+
+        <!-- Resend verification (shown on EMAIL_NOT_VERIFIED) -->
+        <div class="resend-section" id="resend-section">
+          <button class="btn-resend" id="resend-btn" type="button">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+            </svg>
+            Resend verification email
+          </button>
+
+          <!-- What to do now — shown after resend is clicked -->
+          <div class="verify-guidance" id="verify-guidance">
+            <div class="verify-guidance-header">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              Check your inbox now
+            </div>
+            <ol class="verify-steps">
+              <li>
+                <span class="verify-step-num">1</span>
+                <span>Open the email from ChargeGuard and click the confirmation link</span>
+              </li>
+              <li>
+                <span class="verify-step-num">2</span>
+                <span><strong>Keep this tab open</strong> — come back here and click Continue</span>
+              </li>
+            </ol>
+            <div class="verify-spam-note">
+              <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+              Can't find it? Check your spam or promotions folder.
+            </div>
+          </div>
+        </div>
+
+        <div class="divider-text">
+          <span>New to ChargeGuard?</span>
+        </div>
+
+        <div class="register-link">
+          <a href="index.html#access" target="_blank" rel="noopener">Create your free account first →</a>
+        </div>
+
+        <div class="security-note">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;opacity:0.7;"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+          Your email is only used to link your ChargeGuard account — never shared, never sold.
+        </div>
+      </div><!-- /form-card -->
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="page-footer">
+    <span class="footer-copy">© 2026 ChargeGuard. All rights reserved.</span>
+    <div class="footer-links">
+      <a href="privacy.html">Privacy</a>
+      <a href="terms.html">Terms</a>
+    </div>
+  </footer>
+
+  <script>
+  (function () {
+    'use strict';
+
+    // ══════════════════════════════════════════════════════════════════
+    // CONFIG
+    // ══════════════════════════════════════════════════════════════════
+    const API_BASE        = 'https://chargeguard-api.onrender.com';
+    const CONNECT_URL     = API_BASE + '/api/auth/connect';
+    const CHECKOUT_URL    = API_BASE + '/api/payments/create-checkout-session';
+    const RESEND_URL      = API_BASE + '/api/auth/resend-verification';
+    const FETCH_TIMEOUT   = 35000; // 35 s — covers Render free tier cold start (up to 50s in extreme cases)
+
+    // ══════════════════════════════════════════════════════════════════
+    // PLAN DEFINITIONS (mirrors PLAN_CONFIG in payments.js)
+    // ══════════════════════════════════════════════════════════════════
+    const PLANS = {
+      pro_monthly: {
+        id:            'pro_monthly',
+        name:          'Shield Pro',
+        cycle:         'Monthly billing',
+        price:         '$19',
+        display_price: '$19',
+        display_sub:   '/month',
+        sub:           '/month',
+        save:          null,
+        eyebrow:       'The step that makes next Tuesday different',
+        features: [
+          'Everything in Starter',
+          '5,000 attacks blocked / month',
+          'Flags high-risk cards and known bad IPs before checkout',
+          'Email + Slack / Discord alerts',
+          '30-day full refund if we don\'t deliver',
+        ],
+      },
+      pro_annual: {
+        id:            'pro_annual',
+        name:          'Shield Pro',
+        cycle:         'Annual billing — 2 months free',
+        price:         '$159',
+        display_price: '$13',
+        display_sub:   '/mo',
+        annual_total:  'Billed as $159/year',
+        sub:           '/year  ($13.25/mo)',
+        save:          'Save $69 vs monthly',
+        eyebrow:       'The step that makes next Tuesday different',
+        features: [
+          'Everything in Starter',
+          '5,000 attacks blocked / month',
+          'Flags high-risk cards and known bad IPs before checkout',
+          'Email + Slack / Discord alerts',
+          '30-day full refund if we don\'t deliver',
+        ],
+      },
+      agency_monthly: {
+        id:            'agency_monthly',
+        name:          'Shield Agency',
+        cycle:         'Monthly billing',
+        price:         '$49',
+        display_price: '$49',
+        display_sub:   '/month',
+        sub:           '/month',
+        save:          null,
+        eyebrow:       'Every store. Next Tuesday. Protected.',
+        features: [
+          'Everything in Pro',
+          'Up to 5 WooCommerce stores',
+          'Unlimited attacks across all stores',
+          'Unified multi-store dashboard',
+        ],
+      },
+      agency_annual: {
+        id:            'agency_annual',
+        name:          'Shield Agency',
+        cycle:         'Annual billing — 2 months free',
+        price:         '$399',
+        display_price: '$33',
+        display_sub:   '/mo',
+        annual_total:  'Billed as $399/year',
+        sub:           '/year  ($33.25/mo)',
+        save:          'Save $189 vs monthly',
+        eyebrow:       'Every store. Next Tuesday. Protected.',
+        features: [
+          'Everything in Pro',
+          'Up to 5 WooCommerce stores',
+          'Unlimited attacks across all stores',
+          'Unified multi-store dashboard',
+        ],
+      },
+    };
+
+    // ══════════════════════════════════════════════════════════════════
+    // READ ?plan= FROM URL
+    // ══════════════════════════════════════════════════════════════════
+    const params = new URLSearchParams(window.location.search);
+    const planId = params.get('plan') || 'pro_monthly';
+    const plan   = PLANS[planId] || PLANS['pro_monthly'];
+
+    // ══════════════════════════════════════════════════════════════════
+    // RENDER PLAN SUMMARY
+    // ══════════════════════════════════════════════════════════════════
+    document.getElementById('plan-eyebrow').textContent    = plan.eyebrow;
+    document.getElementById('plan-title-name').textContent = plan.name;
+    document.getElementById('card-plan-name').textContent  = plan.name;
+    document.getElementById('card-plan-cycle').textContent = plan.cycle;
+    document.getElementById('card-plan-price').textContent = plan.display_price || plan.price;
+    document.getElementById('card-plan-sub').textContent   = plan.display_sub   || plan.sub;
+
+    // Show annual total note if present
+    if (plan.annual_total) {
+      let annualNote = document.getElementById('card-annual-note');
+      if (!annualNote) {
+        annualNote = document.createElement('div');
+        annualNote.id        = 'card-annual-note';
+        annualNote.className = 'card-annual-note';
+        document.getElementById('card-plan-sub').insertAdjacentElement('afterend', annualNote);
+      }
+      annualNote.textContent = plan.annual_total;
+    }
+    document.title = 'Upgrade to ' + plan.name + ' — ChargeGuard';
+
+    if (plan.save) {
+      const tag = document.getElementById('card-save-tag');
+      tag.textContent  = plan.save;
+      tag.style.display = 'inline-block';
+    }
+
+    const featuresList = document.getElementById('plan-features-list');
+    plan.features.forEach(function (feat) {
+      const li  = document.createElement('li');
+      const ico = document.createElement('span');
+      ico.className = 'feat-check';
+      ico.innerHTML = '<svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg>';
+      const txt = document.createTextNode(feat);
+      li.appendChild(ico);
+      li.appendChild(txt);
+      featuresList.appendChild(li);
+    });
+
+    // ══════════════════════════════════════════════════════════════════
+    // DOM REFS
+    // ══════════════════════════════════════════════════════════════════
+    const emailInput    = document.getElementById('email-input');
+    const submitBtn     = document.getElementById('submit-btn');
+    const messageBox    = document.getElementById('message-box');
+    const resendSection = document.getElementById('resend-section');
+    const resendBtn     = document.getElementById('resend-btn');
+
+    // tracks whether a 403 email_not_verified has appeared once already.
+    // if true and a second 403 arrives, we show a "still syncing" message
+    // instead of repeating "not verified" — distinguishes api cache delay
+    // from a genuinely unverified account. reset on each new email input.
+    let verificationattemptedonce = false;
+
+    // ── Email validation ────────────────────────────────────────────
+    const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+    // ══════════════════════════════════════════════════════════════════
+    // UI HELPERS
+    // ══════════════════════════════════════════════════════════════════
+    function showMessage(html, type) {
+      messageBox.innerHTML  = html;
+      messageBox.className  = 'message-box ' + type;
+      messageBox.style.display = 'block';
+    }
+
+    function hideMessage() {
+      messageBox.style.display = 'none';
+      messageBox.className     = 'message-box';
+    }
+
+    function setLoading(isLoading, label) {
+      if (isLoading) {
+        submitBtn.disabled  = true;
+        submitBtn.innerHTML =
+          '<span class="spin" style="width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;display:inline-block;"></span> ' +
+          (label || 'Please wait…');
+      } else {
+        submitBtn.disabled  = false;
+        submitBtn.innerHTML =
+          '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Continue to Payment';
+      }
+    }
+
+    function fetchWithTimeout(url, options) {
+      const controller = new AbortController();
+      const tid = setTimeout(function () { controller.abort(); }, FETCH_TIMEOUT);
+      return fetch(url, Object.assign({}, options, { signal: controller.signal }))
+        .finally(function () { clearTimeout(tid); });
+    }
+
+    // ══════════════════════════════════════════════════════════════════
+    // STEP 2: CREATE CHECKOUT SESSION (called after successful connect)
+    // ══════════════════════════════════════════════════════════════════
+    async function createCheckoutAndRedirect(apiKey) {
+      setLoading(true, 'Creating secure checkout…');
+
+      try {
+        const res  = await fetchWithTimeout(CHECKOUT_URL, {
+          method:  'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key':    apiKey,
+          },
+          body: JSON.stringify({ planId: plan.id }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          // Existing pending session for same plan — sessionId still returned
+          if (data.sessionId) {
+            window.location.href = 'checkout.html?session=' + data.sessionId;
+            return;
+          }
+          throw new Error(data.error || 'Could not create checkout session.');
+        }
+
+        // ✅ Redirect to checkout
+        window.location.href = 'checkout.html?session=' + data.sessionId;
+
+      } catch (err) {
+        setLoading(false);
+        if (err.name === 'AbortError') {
+          showMessage(
+            'The server took too long to respond. Please try again.',
+            'error'
+          );
+        } else {
+          showMessage(
+            'We couldn\'t start your checkout. Please try again or ' +
+            '<a href="index.html#access" style="color:#fca5a5;text-decoration:underline;">contact support</a>.',
+            'error'
+          );
+        }
+      }
+    }
+
+    // ══════════════════════════════════════════════════════════════════
+    // STEP 1: CONNECT — verify email & retrieve API key
+    // ══════════════════════════════════════════════════════════════════
+    async function handleSubmit() {
+      const email = emailInput.value.trim();
+
+      // Client-side validation
+      if (!email || !EMAIL_RE.test(email)) {
+        emailInput.classList.add('input-error');
+        emailInput.focus();
+        showMessage('Please enter a valid email address.', 'error');
+        return;
+      }
+
+      emailInput.classList.remove('input-error');
+      hideMessage();
+      resendSection.classList.remove('visible');
+      setLoading(true, 'Verifying your account…');
+
+      // Progressive feedback — Maister (1985): explained waits feel shorter
+      const _pgU1 = setTimeout(() => showMessage('Connecting to ChargeGuard servers…', 'info'), 4000);
+      const _pgU2 = setTimeout(() => showMessage('Almost there — our server may be waking up after a quiet period…', 'info'), 12000);
+      const _pgU3 = setTimeout(() => showMessage('Still connecting — this can take up to 30 seconds on first load. Hang tight.', 'info'), 22000);
+      function _clearUpgradePg() { [_pgU1, _pgU2, _pgU3].forEach(clearTimeout); }
+
+      try {
+        const res  = await fetchWithTimeout(CONNECT_URL, {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ email }),
+        });
+
+        const data = await res.json();
+
+        // ── 404: No account — guide forward, don't reject ────────────
+        // Opens registration in a NEW TAB so upgrade.html stays open.
+        // User registers → verifies → returns here → enters email again.
+        // Zeigarnik Effect: keeping this tab open preserves purchase intent.
+        if (res.status === 404) {
+          _clearUpgradePg();
+          setLoading(false);
+          // Pre-fill the inline registration form with the email already entered
+          // No tab switching — user stays in the upgrade flow (Zeigarnik + Ovsiankina)
+          showMessage(
+            '<strong style="color:#fde68a;">No account yet — create one right here in 30 seconds.</strong>' +
+            '<span style="font-size:0.82rem;color:#94a3b8;line-height:1.7;display:block;margin-top:6px;">Enter your email below and we\'ll send you an API key instantly. Then come straight back here and click Continue.</span>' +
+            '<div style="margin-top:0.85rem;display:flex;flex-direction:column;gap:0.5rem;">' +
+            '<input id="inline-reg-email" type="email" value="' + email.replace(/"/g, '&quot;') + '" placeholder="you@yourstore.com" style="width:100%;padding:10px 13px;background:var(--bg-input);border:1px solid rgba(249,115,22,0.3);border-radius:var(--radius-sm);color:var(--text-primary);font-family:var(--font-body);font-size:0.9rem;outline:none;" />' +
+            '<button id="inline-reg-btn" type="button" style="display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:0.65rem 1.25rem;background:var(--orange);color:#fff;border:none;border-radius:var(--radius-sm);font-family:var(--font-display);font-weight:600;font-size:0.875rem;cursor:pointer;transition:var(--transition);">' +
+            '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>' +
+            'Create Free Account &amp; Get API Key</button>' +
+            '</div>',
+            'warning'
+          );
+
+          // Wire up inline registration button after DOM update
+          setTimeout(function () {
+            const inlineBtn   = document.getElementById('inline-reg-btn');
+            const inlineEmail = document.getElementById('inline-reg-email');
+            if (!inlineBtn || !inlineEmail) return;
+
+            inlineBtn.addEventListener('click', async function () {
+              const regEmail = inlineEmail.value.trim();
+              const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+              if (!regEmail || !EMAIL_RE.test(regEmail)) {
+                inlineEmail.style.borderColor = 'rgba(239,68,68,0.6)';
+                inlineEmail.focus();
+                return;
+              }
+
+              inlineBtn.disabled   = true;
+              inlineBtn.textContent = 'Creating account…';
+
+              try {
+                const regRes  = await fetchWithTimeout(
+                  'https://chargeguard-api.onrender.com/api/risk/tenants/register',
+                  {
+                    method:  'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body:    JSON.stringify({ email: regEmail }),
+                  }
+                );
+                const regData = await regRes.json();
+
+                if (regRes.ok || regRes.status === 409) {
+                  // 409 = already exists (race condition) — treat as success
+                  // Pre-fill the main email input with the registered email
+                  emailInput.value = regEmail;
+                  verificationAttemptedOnce = false;
+
+                  // Show verification guidance — same flow as EMAIL_NOT_VERIFIED
+                  showMessage(
+                    '✅ <strong style="color:#6ee7b7;">Account created!</strong> ' +
+                    '<span style="color:#94a3b8;font-size:0.82rem;display:block;margin-top:5px;">Check your inbox, verify your email, then click <strong style="color:var(--orange);">I\'ve Verified — Continue</strong> below.</span>',
+                    'info'
+                  );
+
+                  // Show resend section and verify guidance
+                  resendBtn.dataset.email = regEmail;
+                  resendSection.classList.add('visible');
+                  const guidance = document.getElementById('verify-guidance');
+                  if (guidance) guidance.classList.add('visible');
+
+                  // Flip CTA to verified state
+                  submitBtn.disabled      = false;
+                  submitBtn.style.opacity = '1';
+                  submitBtn.innerHTML =
+                    '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>' +
+                    ' I\'ve Verified \u2014 Continue \u2192';
+                } else {
+                  showMessage(
+                    regData.error || 'Registration failed — please try again.',
+                    'error'
+                  );
+                  inlineBtn.disabled   = false;
+                  inlineBtn.textContent = 'Create Free Account & Get API Key';
+                }
+              } catch (err) {
+                showMessage('Could not reach ChargeGuard. Check your connection and try again.', 'error');
+                inlineBtn.disabled   = false;
+                inlineBtn.textContent = 'Create Free Account & Get API Key';
+              }
+            });
+          }, 50);
+          return;
+        }
+
+        // ── 403: Email not verified ──────────────────────────────────
+        if (res.status === 403 && data.code === 'EMAIL_NOT_VERIFIED') {
+          _clearUpgradePg();
+          setLoading(false);
+
+          if (verificationAttemptedOnce) {
+            // Second 403 after user already saw the guidance and clicked
+            // "I've Verified" — most likely an API cache delay, not a
+            // genuinely unverified account. Show a calm "still syncing"
+            // message (info, not warning) and avoid repeating the steps.
+            // Pattern: Stripe / GitHub / Notion all attribute the delay
+            // to the system, not the user — preserves Locus of Control.
+            showMessage(
+              '<strong style="color:#90cdf4;">Still syncing —</strong> verification sometimes takes under 30 seconds to reflect. Wait a moment and click Continue again.',
+              'info'
+            );
+            submitBtn.disabled      = false;
+            submitBtn.style.opacity = '1';
+            submitBtn.innerHTML =
+              '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>' +
+              ' Continue \u2192';
+            return;
+          }
+
+          // First 403 — user genuinely hasn't verified yet.
+          // Show warning + guidance + flip CTA to "I've Verified".
+          verificationAttemptedOnce = true;
+          showMessage(
+            '<strong style="color:#fde68a;">Email not yet verified —</strong> one more step before you\'re protected.',
+            'warning'
+          );
+          // Store email for resend
+          resendBtn.dataset.email = email;
+          resendSection.classList.add('visible');
+
+          // Show guidance immediately — don't wait for resend click.
+          // Serves two cases at once:
+          // Case A (not verified yet): sees steps → follows them → returns → clicks Continue.
+          // Case B (verified but API cache delay): ignores guidance → clicks Continue directly.
+          const guidance = document.getElementById('verify-guidance');
+          if (guidance) guidance.classList.add('visible');
+
+          // Flip CTA immediately — Jakob's Law: "verified → continue" is the
+          // expected mental model. User shouldn't need to resend first to unlock it.
+          submitBtn.disabled      = false;
+          submitBtn.style.opacity = '1';
+          submitBtn.innerHTML =
+            '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>' +
+            ' I\'ve Verified \u2014 Continue \u2192';
+          return;
+        }
+
+        // ── 403: Inactive account ────────────────────────────────────
+        if (res.status === 403) {
+          _clearUpgradePg();
+          setLoading(false);
+          showMessage(
+            'Your account is inactive. Please contact support at ' +
+            '<a href="mailto:support@chargeguard.io" style="color:#fca5a5;">support@chargeguard.io</a>.',
+            'error'
+          );
+          return;
+        }
+
+        // ── Other errors ─────────────────────────────────────────────
+        if (!res.ok) {
+          _clearUpgradePg();
+          setLoading(false);
+          showMessage(data.error || 'Something went wrong. Please try again.', 'error');
+          return;
+        }
+
+        // ── ✅ Success — proceed to checkout ─────────────────────────
+        _clearUpgradePg();
+        // apiKey lives only in this closure — never written to DOM or storage
+        const apiKey = data.apiKey;
+        if (!apiKey) {
+          setLoading(false);
+          showMessage('Unexpected response. Please try again.', 'error');
+          return;
+        }
+
+        await createCheckoutAndRedirect(apiKey);
+
+      } catch (err) {
+        _clearUpgradePg();
+        setLoading(false);
+        if (err.name === 'AbortError') {
+          showMessage('Taking longer than expected — our server may have been asleep. Please try again in a few seconds.', 'error');
+        } else {
+          showMessage('Could not reach ChargeGuard. Check your connection and try again.', 'error');
+        }
+      }
+    }
+
+    // ══════════════════════════════════════════════════════════════════
+    // RESEND VERIFICATION EMAIL
+    // ══════════════════════════════════════════════════════════════════
+    resendBtn.addEventListener('click', async function () {
+      const email = resendBtn.dataset.email || emailInput.value.trim();
+      if (!email) return;
+
+      resendBtn.disabled  = true;
+      resendBtn.innerHTML = '<span class="spin" style="width:13px;height:13px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;display:inline-block;"></span> Sending…';
+
+      try {
+        const res  = await fetchWithTimeout(RESEND_URL, {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ email }),
+        });
+        const data = await res.json();
+
+        if (res.status === 429) {
+          resendBtn.innerHTML = 'Resend verification email';
+          resendBtn.disabled  = false;
+          showMessage(
+            data.error || 'Please wait before requesting another email.',
+            'warning'
+          );
+          return;
+        }
+
+        // Success — show guidance block and update main button state
+        showMessage(
+          '✅ Confirmation email sent to <strong>' + email + '</strong>.',
+          'info'
+        );
+        resendBtn.innerHTML = 'Email sent ✓';
+
+        // Show "what to do now" guidance
+        const guidance = document.getElementById('verify-guidance');
+        if (guidance) guidance.classList.add('visible');
+
+        // ── After resend: CTA becomes "I've Verified" — no forced wait ────
+        // User verifies in inbox → returns → hits button → handleSubmit fires.
+        // If not yet verified: API returns 403 again → clear message shown.
+        // Jakob's Law: verified → continue is the expected mental model.
+        setLoading(false);
+        submitBtn.disabled      = false;
+        submitBtn.style.opacity = '1';
+        submitBtn.innerHTML =
+          '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>' +
+          ' I\'ve Verified — Continue \u2192';
+
+        // Re-enable resend after 60 s (unchanged)
+        setTimeout(function () {
+          resendBtn.disabled  = false;
+          resendBtn.innerHTML = 'Resend verification email';
+        }, 60000);
+
+      } catch (err) {
+        resendBtn.innerHTML = 'Resend verification email';
+        resendBtn.disabled  = false;
+        showMessage('Could not send email. Please try again.', 'error');
+      }
+    });
+
+    // ══════════════════════════════════════════════════════════════════
+    // EVENT BINDINGS
+    // ══════════════════════════════════════════════════════════════════
+    submitBtn.addEventListener('click', handleSubmit);
+
+    emailInput.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') handleSubmit();
+    });
+
+    emailInput.addEventListener('input', function () {
+      emailInput.classList.remove('input-error');
+      hideMessage();
+      resendSection.classList.remove('visible');
+      // Reset verification state — new email = fresh attempt
+      verificationAttemptedOnce = false;
+    });
+
+    // ══════════════════════════════════════════════════════════════════
+    // FALLBACK: unknown plan → redirect to pricing
+    // ══════════════════════════════════════════════════════════════════
+    if (!PLANS[planId]) {
+      window.location.href = 'index.html#pricing';
+    }
+
+  })();
+  </script>
+
+</body>
+</html>

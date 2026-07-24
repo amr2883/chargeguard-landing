@@ -87,8 +87,19 @@ footer { text-align: center; padding: 2rem; font-size: 0.8rem; color: var(--text
   <h1>Privacy Policy</h1>
   <p class="effective">Effective Date: May 9, 2026 · Last updated: May 9, 2026</p>
 
-  <div class="summary-box">
-    <p><strong>Plain English summary:</strong> ChargeGuard processes minimal data strictly for fraud detection. We do not sell your data, share it with advertisers, or use it for any purpose beyond protecting your store. Your customers' emails are never stored in plain text.</p>
+  <div style="
+    border-left: 3px solid rgba(249,115,22,0.6);
+    background: rgba(249,115,22,0.04);
+    border-radius: 0 10px 10px 0;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 3rem;
+  " aria-label="Plain-English privacy summary">
+    <p style="font-size:0.72rem; font-family:monospace; letter-spacing:0.1em; text-transform:uppercase; color:#f97316; margin-bottom:0.85rem;">What this means for you — in plain English</p>
+    <div style="display:flex; flex-direction:column; gap:0.7rem;">
+      <p style="font-size:0.9rem; color:#cbd5e1; margin:0; line-height:1.65;"><strong style="color:#f1f5f9;">We do not sell, share, or advertise with your data or your customers' data — ever.</strong> The only reason any data enters our system is to assess whether a checkout request is a bot. That is the beginning and end of what we do with it.</p>
+      <p style="font-size:0.9rem; color:#cbd5e1; margin:0; line-height:1.65;"><strong style="color:#f1f5f9;">Your customers' email addresses are never stored in plain text.</strong> We hash them with SHA-256 before processing — the original address cannot be recovered from what we store, by us or anyone else.</p>
+      <p style="font-size:0.9rem; color:#cbd5e1; margin:0; line-height:1.65;"><strong style="color:#f1f5f9;">Checkout signal data is deleted after 90 days.</strong> IP addresses, device identifiers, and hashed emails are purged on a rolling 90-day cycle. We retain only what we need, for as long as we need it.</p>
+    </div>
   </div>
 
   <div class="section">
@@ -98,7 +109,19 @@ footer { text-align: center; padding: 2rem; font-size: 0.8rem; color: var(--text
   </div>
 
   <div class="section">
-    <h2><span class="num">02</span> Data We Process</h2>
+    <h2><span class="num">02</span> What We Never Collect</h2>
+    <ul>
+      <li>Full payment card numbers or CVV codes</li>
+      <li>Passwords or authentication credentials</li>
+      <li>Personal identity documents</li>
+      <li>Browsing history outside of checkout signals</li>
+      <li>Any data not listed in Section 03</li>
+    </ul>
+    <p>Here is exactly what we do process, and why.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">03</span> Data We Process</h2>
     <p>ChargeGuard processes two categories of data:</p>
     <p><strong style="color:var(--text-primary);">A. Store Owner Data (you)</strong></p>
     <table>
@@ -116,17 +139,6 @@ footer { text-align: center; padding: 2rem; font-size: 0.8rem; color: var(--text
       <tr><td>Device fingerprint</td><td>Randomly generated per-session identifier, not tied to real identity</td><td><span class="badge badge-no">Never</span></td></tr>
       <tr><td>BIN (first 6 digits of card)</td><td>Used to check card country vs. customer location — no full card data ever processed</td><td><span class="badge badge-no">Never</span></td></tr>
     </table>
-  </div>
-
-  <div class="section">
-    <h2><span class="num">03</span> What We Never Collect</h2>
-    <ul>
-      <li>Full payment card numbers or CVV codes</li>
-      <li>Passwords or authentication credentials</li>
-      <li>Personal identity documents</li>
-      <li>Browsing history outside of checkout signals</li>
-      <li>Any data not listed in Section 02</li>
-    </ul>
   </div>
 
   <div class="section">
@@ -153,13 +165,28 @@ footer { text-align: center; padding: 2rem; font-size: 0.8rem; color: var(--text
 
   <div class="section">
     <h2><span class="num">06</span> Third-Party Services</h2>
-    <p>ChargeGuard uses the following third-party services to operate:</p>
-    <ul>
-      <li><strong style="color:var(--text-primary);">Cloudflare Turnstile</strong> — bot protection on our registration form. Cloudflare may process your IP and browser signals per <a href="https://www.cloudflare.com/privacypolicy/" target="_blank">Cloudflare's Privacy Policy</a>.</li>
-      <li><strong style="color:var(--text-primary);">Render.com</strong> — cloud hosting for our API. Data is processed on Render's infrastructure per <a href="https://render.com/privacy" target="_blank">Render's Privacy Policy</a>.</li>
-      <li><strong style="color:var(--text-primary);">Neon (PostgreSQL)</strong> — database hosting. Data is stored encrypted at rest.</li>
-    </ul>
-    <p>No data is shared with these providers beyond what is necessary to operate the Service.</p>
+    <p>ChargeGuard uses three infrastructure providers to operate. The table below specifies exactly what data each one receives — nothing reaches any provider beyond what is listed here.</p>
+    <table>
+      <tr><th>Provider</th><th>Role</th><th>Data They Receive</th><th>Their Policy</th></tr>
+      <tr>
+        <td><strong style="color:var(--text-primary);">Cloudflare Turnstile</strong></td>
+        <td>Bot protection on the registration form</td>
+        <td>Your IP address and browser signals at the moment of registration. Not linked to your store or ongoing account activity.</td>
+        <td><a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener">Cloudflare Privacy Policy</a></td>
+      </tr>
+      <tr>
+        <td><strong style="color:var(--text-primary);">Render.com</strong></td>
+        <td>Cloud hosting for the ChargeGuard API</td>
+        <td>All API request data passes through Render's infrastructure — this includes checkout signals sent by the plugin. Render processes this data on our behalf and is bound by data processing terms; they do not have independent rights to use it.</td>
+        <td><a href="https://render.com/privacy" target="_blank" rel="noopener">Render Privacy Policy</a></td>
+      </tr>
+      <tr>
+        <td><strong style="color:var(--text-primary);">Neon (PostgreSQL)</strong></td>
+        <td>Database hosting</td>
+        <td>Store owner account data (email, store URL, API key) and hashed checkout signals. All data is encrypted at rest. Neon does not have access to the content of stored data.</td>
+        <td><a href="https://neon.tech/privacy-policy" target="_blank" rel="noopener">Neon Privacy Policy</a></td>
+      </tr>
+    </table>
   </div>
 
   <div class="section">
@@ -167,22 +194,22 @@ footer { text-align: center; padding: 2rem; font-size: 0.8rem; color: var(--text
     <p>You have the following rights regarding your data:</p>
     <div class="rights-grid">
       <div class="right-card">
-        <div class="icon">👁</div>
+        <div class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>
         <div class="title">Access</div>
         <div class="desc">Request a copy of data we hold about you</div>
       </div>
       <div class="right-card">
-        <div class="icon">✏️</div>
+        <div class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
         <div class="title">Correction</div>
         <div class="desc">Request correction of inaccurate data</div>
       </div>
       <div class="right-card">
-        <div class="icon">🗑</div>
+        <div class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></div>
         <div class="title">Deletion</div>
         <div class="desc">Request deletion of your account and associated data</div>
       </div>
       <div class="right-card">
-        <div class="icon">📦</div>
+        <div class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
         <div class="title">Portability</div>
         <div class="desc">Request your data in a machine-readable format</div>
       </div>
@@ -203,14 +230,29 @@ footer { text-align: center; padding: 2rem; font-size: 0.8rem; color: var(--text
   </div>
 
   <div class="section">
-    <h2><span class="num">09</span> Changes to This Policy</h2>
+    <h2><span class="num">09</span> Service Continuity & Data in the Event of Shutdown or Acquisition</h2>
+    <p>If ChargeGuard ceases operation or is acquired by another company, we will notify all registered store owners by email at least 30 days in advance.</p>
+    <p>If ChargeGuard is acquired, all store owner account data and checkout signal data will be permanently and irreversibly deleted before any transfer is finalized. The acquirer will receive no user data. If the service shuts down without an acquirer, the same applies: all data will be permanently deleted within 30 days of service termination. You will not need to take any action — deletion will happen automatically.</p>
+    <p>If you would prefer not to wait, you can request deletion of your data at any time by emailing <a href="mailto:support@chargeguard.io">support@chargeguard.io</a>.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">10</span> Do You Need to Update Your Own Privacy Policy?</h2>
+    <p>When you install ChargeGuard, checkout signals from your customers pass through our API for fraud risk assessment. Depending on where your customers are located, this may affect your own privacy policy obligations.</p>
+    <p><strong style="color:var(--text-primary);">If your store serves customers in the European Economic Area (GDPR):</strong> ChargeGuard acts as a data processor on your behalf under Article 28 of the GDPR. We offer a standard Data Processing Agreement (DPA) under Article 28 of the GDPR — email <a href="mailto:support@chargeguard.io">support@chargeguard.io</a> to request one. You should disclose the use of third-party fraud detection tools in your store's privacy policy. We can provide suggested language on request.</p>
+    <p><strong style="color:var(--text-primary);">If your store serves customers in California (CCPA):</strong> ChargeGuard does not sell or share customer data, which means our use does not trigger CCPA disclosure obligations under the "sale" definition. However, we recommend disclosing the use of fraud detection tools in your privacy policy as a matter of transparency.</p>
+    <p><strong style="color:var(--text-primary);">If you're unsure:</strong> Email us at <a href="mailto:support@chargeguard.io">support@chargeguard.io</a>. We'll give you a straight answer about what applies to your store, not a referral to a lawyer you didn't ask for.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">11</span> Changes to This Policy</h2>
     <p>We may update this Privacy Policy from time to time. We will notify registered store owners by email at least 14 days before material changes take effect. The "Last updated" date at the top of this page will always reflect the most recent version.</p>
   </div>
 
   <div class="section">
-    <h2><span class="num">10</span> Contact</h2>
-    <p>For privacy questions or to exercise your rights:<br>
-    <a href="mailto:support@chargeguard.io">support@chargeguard.io</a></p>
+    <h2><span class="num">12</span> Contact</h2>
+    <p>For privacy questions or to exercise your rights, email us at <a href="mailto:support@chargeguard.io">support@chargeguard.io</a> — we read and respond to every message ourselves. If you want a faster answer, message us directly on Telegram at <a href="https://t.me/ChargeGuardd" target="_blank" rel="noopener">@ChargeGuardd</a>.</p>
+    <p style="font-size:0.82rem; color:var(--text-muted); font-family:monospace; letter-spacing:0.03em; margin-top:0.75rem;">— Amr, founder · <a href="mailto:support@chargeguard.io" style="color:var(--orange);">support@chargeguard.io</a></p>
   </div>
 
   <a href="index.html" class="back">← Back to ChargeGuard</a>

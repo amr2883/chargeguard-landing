@@ -1,0 +1,1711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Secure Checkout — ChargeGuard</title>
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%230b1121'/><path d='M16 4L6 8v7c0 6.5 4.5 10.8 10 12.5C21.5 25.8 26 21.5 26 15V8L16 4z' fill='%23f97316' opacity='.9'/><path d='M11 16l3.5 3.5L21 12' stroke='white' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round' fill='none'/></svg>" type="image/svg+xml">
+
+  <!-- performance: resolve paypal + api domains during page load -->
+  <!-- http archive 2023: preconnect saves avg 400ms on third-party sdk load -->
+  <link rel="preconnect" href="https://www.paypal.com" crossorigin>
+  <link rel="dns-prefetch" href="//www.paypalobjects.com">
+  <link rel="preconnect" href="https://chargeguard-api.onrender.com">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- PayPal JS SDK — client-id injected by JS at runtime (safe: client-id is public) -->
+
+  <style>
+    :root {
+      --orange:        #f97316;
+      --orange-dark:   #ea580c;
+      --orange-glow:   rgba(249,115,22,0.15);
+      --red:           #ef4444;
+      --green:         #10b981;
+      --green-bg:      rgba(16,185,129,0.1);
+      --green-border:  rgba(16,185,129,0.25);
+
+      --bg-base:       #0b1121;
+      --bg-card:       #111827;
+      --bg-input:      #0d1526;
+      --bg-deepest:    #020617;
+
+      --border:        rgba(255,255,255,0.07);
+      --border-orange: rgba(249,115,22,0.3);
+      --border-hover:  rgba(255,255,255,0.12);
+
+      --text-primary:  #f1f5f9;
+      --text-body:     #cbd5e1;
+      --text-muted:    #64748b;
+      --text-faint:    #334155;
+
+      --font-display:  'Syne', sans-serif;
+      --font-body:     'DM Sans', sans-serif;
+      --font-mono:     'JetBrains Mono', monospace;
+
+      --radius-sm:     8px;
+      --radius-md:     12px;
+      --radius-lg:     20px;
+      --radius-xl:     28px;
+      --transition:    all 0.25s cubic-bezier(0.4,0,0.2,1);
+      --shadow-card:   0 4px 24px rgba(0,0,0,0.4);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-font-smoothing: antialiased; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg-base);
+      color: var(--text-body);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* Grid background */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image:
+        linear-gradient(rgba(249,115,22,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(249,115,22,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none; z-index: 0;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: -20%; left: 50%; transform: translateX(-50%);
+      width: 600px; height: 400px;
+      background: radial-gradient(ellipse at center, rgba(249,115,22,0.06) 0%, transparent 70%);
+      pointer-events: none; z-index: 0;
+    }
+
+    /* ── Navbar ── */
+    .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 clamp(1.25rem, 4vw, 2.5rem);
+      height: 64px;
+      background: rgba(11,17,33,0.8);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      z-index: 10;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .nav-logo-icon {
+      width: 30px; height: 30px;
+      background: linear-gradient(135deg, var(--orange) 0%, var(--orange-dark) 100%);
+      border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .nav-logo-icon svg { width: 17px; height: 17px; fill: white; }
+
+    .nav-logo-text {
+      font-family: var(--font-display);
+      font-size: 1.15rem; font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+    }
+
+    .nav-logo-text span { color: var(--orange); }
+
+    .secure-badge {
+      position: absolute;
+      right: clamp(1.25rem, 4vw, 2.5rem);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    .secure-badge svg {
+      width: 13px; height: 13px;
+      stroke: var(--green); fill: none;
+      stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+    }
+
+    /* ── Main ── */
+    .page-main {
+      flex: 1;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: clamp(2rem, 5vw, 3.5rem) clamp(1rem, 4vw, 2rem);
+      position: relative;
+      z-index: 1;
+    }
+
+    .checkout-wrapper {
+      display: grid;
+      grid-template-columns: 1fr 400px;
+      gap: 2.5rem;
+      max-width: 900px;
+      width: 100%;
+      align-items: start;
+    }
+
+    /* ══════════════════════════════════
+       LEFT: Order Summary
+    ══════════════════════════════════ */
+    .order-summary {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+    }
+
+    .summary-header {
+      padding: 1.5rem 1.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .summary-label {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.35rem;
+    }
+
+    .summary-plan-name {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+    }
+
+    .summary-body { padding: 1.5rem 1.75rem; }
+
+    /* Amount row */
+    .amount-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 1.25rem;
+    }
+
+    .amount-label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .amount-value {
+      font-family: var(--font-display);
+      font-size: 2.4rem;
+      font-weight: 800;
+      color: var(--orange);
+      letter-spacing: -0.04em;
+      line-height: 1;
+    }
+
+    .amount-sub {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      margin-top: 0.25rem;
+      text-align: right;
+    }
+
+    .amount-save {
+      display: inline-block;
+      background: rgba(16,185,129,0.12);
+      border: 1px solid rgba(16,185,129,0.25);
+      color: #6ee7b7;
+      font-size: 0.65rem;
+      font-family: var(--font-mono);
+      padding: 0.15rem 0.5rem;
+      border-radius: 100px;
+      margin-top: 0.3rem;
+    }
+
+    .divider { height: 1px; background: var(--border); margin: 1.1rem 0; }
+
+    /* Account row */
+    .account-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(249,115,22,0.04);
+      border: 1px solid rgba(249,115,22,0.1);
+      border-radius: var(--radius-sm);
+      padding: 0.8rem 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .account-row svg {
+      flex-shrink: 0;
+      width: 16px; height: 16px;
+      stroke: var(--orange); fill: none;
+      stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+    }
+
+    .account-row-inner { flex: 1; min-width: 0; }
+
+    .account-row-label {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 0.1rem;
+    }
+
+    .account-row-email {
+      font-size: 0.875rem;
+      color: var(--text-body);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Feature list */
+    .summary-features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .summary-features li {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      font-size: 0.82rem;
+      color: var(--text-body);
+    }
+
+    .feat-check {
+      flex-shrink: 0;
+      margin-top: 1px;
+      width: 15px; height: 15px;
+      background: rgba(16,185,129,0.12);
+      border: 1px solid rgba(16,185,129,0.25);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .feat-check svg {
+      width: 7px; height: 7px;
+      stroke: var(--green); fill: none;
+      stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;
+    }
+
+    /* Cancellation note */
+    .cancel-note {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 1.25rem;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .cancel-note svg {
+      flex-shrink: 0;
+      width: 14px; height: 14px;
+      stroke: var(--text-muted); fill: none;
+      stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+    }
+
+    /* ══════════════════════════════════
+       RIGHT: Payment card
+    ══════════════════════════════════ */
+    .payment-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-orange);
+      border-radius: var(--radius-xl);
+      padding: 2rem;
+      box-shadow: 0 0 50px rgba(249,115,22,0.07);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .payment-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--orange), transparent);
+    }
+
+    /* ── checkout progress indicator ── */
+    /* zeigarnik + ovsiankina: incomplete task tension drives completion */
+    .checkout-progress {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .cp-step {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.7rem;
+      font-family: var(--font-mono);
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+
+    .cp-step svg {
+      width: 12px;
+      height: 12px;
+      flex-shrink: 0;
+    }
+
+    .cp-done {
+      color: var(--green);
+      opacity: 0.9;
+    }
+
+    .cp-done svg {
+      stroke: var(--green);
+      fill: none;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .cp-next svg {
+      stroke: var(--text-faint);
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .cp-active {
+      color: var(--orange);
+      font-weight: 500;
+    }
+
+    .cp-next {
+      color: var(--text-faint);
+    }
+
+    .cp-arrow {
+      font-size: 0.65rem;
+      color: var(--text-faint);
+      margin: 0 0.6rem;
+      flex-shrink: 0;
+    }
+
+    .payment-title {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 700;
+      line-height: 1.35;
+      color: var(--text-primary);
+      margin-bottom: 0.3rem;
+      letter-spacing: -0.015em;
+    }
+
+    .payment-sub {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+
+    /* ── States ── */
+
+    /* SKELETON — loading state */
+    .skeleton {
+      background: linear-gradient(90deg,
+        rgba(255,255,255,0.04) 25%,
+        rgba(255,255,255,0.08) 50%,
+        rgba(255,255,255,0.04) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.6s ease-in-out infinite;
+      border-radius: 6px;
+    }
+
+    @keyframes shimmer {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    .skeleton-line {
+      height: 14px;
+      margin-bottom: 10px;
+    }
+
+    .skeleton-btn {
+      height: 48px;
+      border-radius: var(--radius-md);
+    }
+
+    /* PayPal button container */
+    #paypal-button-container {
+      min-height: 48px;
+    }
+
+    /* Error state */
+    .error-state {
+      display: none;
+      text-align: center;
+      padding: 1rem 0;
+    }
+
+    .error-state.visible { display: block; }
+
+    .error-icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .error-title {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .error-body {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 1.25rem;
+      line-height: 1.6;
+    }
+
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0.65rem 1.25rem;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-body);
+      font-size: 0.875rem;
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    .btn-back:hover {
+      border-color: var(--border-hover);
+      color: var(--text-primary);
+      background: rgba(255,255,255,0.04);
+    }
+
+    /* Success state */
+    .success-state {
+      display: none;
+      text-align: center;
+      padding: 0.5rem 0;
+    }
+
+    .success-state.visible { display: block; }
+
+    .success-icon {
+      width: 64px; height: 64px;
+      background: var(--green-bg);
+      border: 1px solid var(--green-border);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1.25rem;
+    }
+
+    .success-icon svg {
+      width: 28px; height: 28px;
+      stroke: var(--green); fill: none;
+      stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;
+    }
+
+    .success-title {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .success-body {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      line-height: 1.65;
+      margin-bottom: 1.25rem;
+    }
+
+    .success-email-highlight {
+      font-family: var(--font-mono);
+      color: var(--orange);
+      font-size: 0.85rem;
+    }
+
+    .redirecting-note {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    .dot-pulse {
+      display: flex;
+      gap: 4px;
+    }
+
+    .dot-pulse span {
+      width: 5px; height: 5px;
+      background: var(--text-muted);
+      border-radius: 50%;
+      animation: dotPulse 1.4s ease-in-out infinite;
+    }
+
+    .dot-pulse span:nth-child(2) { animation-delay: 0.2s; }
+    .dot-pulse span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes dotPulse {
+      0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
+      40%            { opacity: 1;   transform: scale(1.1); }
+    }
+
+    /* Security badges */
+    /* refund guarantee — hesitation zone */
+    /* baymard 2021: trust signal in direct cta proximity */
+    .refund-guarantee {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      justify-content: center;
+      margin-top: 1rem;
+      margin-bottom: 0;
+      padding: 0.6rem 0.75rem;
+      background: rgba(16,185,129,0.05);
+      border: 1px solid rgba(16,185,129,0.15);
+      border-radius: var(--radius-sm);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      animation: fadein 0.4s ease both;
+    }
+
+    .refund-guarantee svg {
+      width: 13px;
+      height: 13px;
+      flex-shrink: 0;
+      opacity: 0.85;
+    }
+
+    .refund-guarantee strong {
+      color: #6ee7b7;
+      font-weight: 500;
+    }
+
+    .security-badges {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .security-badge-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .security-badge-item svg {
+      width: 13px; height: 13px;
+      stroke: var(--text-muted); fill: none;
+      stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+    }
+
+    .badge-sep {
+      width: 3px; height: 3px;
+      background: var(--text-faint);
+      border-radius: 50%;
+    }
+
+    /* Payment security note — below trust badges */
+    /* Cialdini 1984: transparency builds deeper trust than claims alone */
+    /* Static — correct regardless of page state, visible during skeleton load */
+    .payment-note {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      margin-top: 0.85rem;
+      font-size: 0.7rem;
+      color: var(--text-faint);
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    .payment-note svg {
+      width: 11px;
+      height: 11px;
+      stroke: var(--text-faint);
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      flex-shrink: 0;
+      opacity: 0.7;
+    }
+
+    /* Processing overlay (PayPal flow in progress) */
+    .processing-overlay {
+      display: none;
+      text-align: center;
+      padding: 1.5rem 0;
+    }
+
+    .processing-overlay.visible { display: block; }
+
+    .spinner-ring {
+      width: 44px; height: 44px;
+      border: 3px solid rgba(249,115,22,0.2);
+      border-top-color: var(--orange);
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+      margin: 0 auto 1rem;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .processing-label {
+      font-size: 0.9rem;
+      color: var(--text-body);
+      font-weight: 500;
+    }
+
+    .processing-sub {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 0.35rem;
+    }
+
+    /* ── Footer ── */
+    .page-footer {
+      position: relative; z-index: 1;
+      border-top: 1px solid var(--border);
+      padding: 1.25rem clamp(1.25rem,5vw,2.5rem);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .footer-copy { font-size: 0.78rem; color: var(--text-muted); }
+
+    .footer-links { display: flex; gap: 1.25rem; }
+
+    .footer-links a {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover { color: var(--text-primary); }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .checkout-wrapper {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+      .secure-badge { display: none; }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-in { animation: fadeIn 0.4s ease both; }
+
+    /* ── Shield Active Pulse — used in Early Supporter block ──
+       Mirrors the same animation in index.html Step 3 mockup.
+       Keeps the visual language consistent across the funnel. ── */
+    @keyframes shieldActivePulse {
+      0%, 100% { opacity: 1;   transform: scale(1);    }
+      50%       { opacity: 0.5; transform: scale(0.82); }
+    }
+
+    /* ── Early Supporter Block ── */
+    .supporter-block {
+      background: linear-gradient(
+        135deg,
+        rgba(249,115,22,0.06) 0%,
+        rgba(249,115,22,0.02) 100%
+      );
+      border: 1px solid rgba(249,115,22,0.2);
+      border-radius: var(--radius-md);
+      padding: 1rem 1.1rem;
+      margin-bottom: 1.25rem;
+      text-align: left;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Subtle top-edge accent — mirrors the payment-card::before */
+    .supporter-block::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(249,115,22,0.5),
+        transparent
+      );
+    }
+
+    .supporter-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(249,115,22,0.1);
+      border: 1px solid rgba(249,115,22,0.25);
+      border-radius: 100px;
+      padding: 0.2rem 0.65rem;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 0.7rem;
+    }
+
+    .supporter-badge-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--orange);
+      animation: shieldActivePulse 2s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+
+    .shield-timestamp {
+      font-family: var(--font-display);
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.015em;
+      line-height: 1.3;
+      margin-bottom: 0.35rem;
+    }
+
+    .shield-id-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .shield-id-tag {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+    }
+
+    .shield-id-value {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--orange);
+      background: rgba(249,115,22,0.08);
+      border: 1px solid rgba(249,115,22,0.18);
+      border-radius: 4px;
+      padding: 0.1rem 0.45rem;
+      letter-spacing: 0.06em;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <a href="index.html" class="nav-brand">
+      <div class="nav-logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2L4 6v6c0 5.25 3.5 10.15 8 11.4C16.5 22.15 20 17.25 20 12V6L12 2zm-1 13l-3-3 1.4-1.4L11 12.2l4.6-4.6L17 9l-6 6z"/></svg>
+      </div>
+      <span class="nav-logo-text">Charge<span>Guard</span></span>
+    </a>
+    <div class="secure-badge">
+      <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+      Secure Checkout
+    </div>
+  </nav>
+
+  <!-- Main -->
+  <main class="page-main">
+    <div class="checkout-wrapper">
+
+      <!-- LEFT: Order Summary -->
+      <div class="order-summary" id="order-summary">
+        <div class="summary-header">
+          <div class="summary-label">Order Summary</div>
+          <div class="summary-plan-name" id="summary-plan-name">
+            <span class="skeleton skeleton-line" style="width:60%;display:block;"></span>
+          </div>
+        </div>
+        <div class="summary-body" id="summary-body">
+          <!-- Populated by JS after session load -->
+          <div class="skeleton skeleton-line" style="width:100%;margin-bottom:8px;"></div>
+          <div class="skeleton skeleton-line" style="width:80%;margin-bottom:8px;"></div>
+          <div class="skeleton skeleton-line" style="width:90%;"></div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Payment card -->
+      <div class="payment-card">
+        <!-- Progress indicator — Zeigarnik Effect: incomplete task creates completion drive -->
+        <!-- "Email ✓" = done · "Payment" = now · "Protected" = reward visible before action -->
+        <div class="checkout-progress" aria-label="Checkout step 2 of 3">
+          <div class="cp-step cp-done">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="20,6 9,17 4,12"/></svg>
+            Email
+          </div>
+          <div class="cp-arrow" aria-hidden="true">→</div>
+          <div class="cp-step cp-active" aria-current="step">
+            Payment
+          </div>
+          <div class="cp-arrow" aria-hidden="true">→</div>
+          <div class="cp-step cp-next">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9,12 11,14 15,10"/></svg>
+            Protected
+          </div>
+        </div>
+
+        <div class="payment-title">Complete your upgrade — your store will be protected immediately</div>
+        <div class="payment-sub" id="payment-sub">Loading secure checkout…</div>
+
+        <!-- Skeleton while loading -->
+        <div id="skeleton-block">
+          <div class="skeleton skeleton-line" style="width:100%;height:48px;border-radius:8px;margin-bottom:10px;"></div>
+          <div class="skeleton skeleton-line" style="width:100%;height:48px;border-radius:8px;"></div>
+        </div>
+
+        <!-- PayPal button (hidden until session loads) -->
+        <div id="paypal-button-container" style="display:none;"></div>
+
+        <!-- Processing overlay (shown during PayPal flow) -->
+        <div class="processing-overlay" id="processing-overlay">
+          <div class="spinner-ring"></div>
+          <div class="processing-label">Confirming with PayPal…</div>
+          <div class="processing-sub">This takes 5–10 seconds. Your store is about to be protected.</div>
+        </div>
+
+        <!-- Success state -->
+        <div class="success-state" id="success-state" role="alert" aria-live="polite">
+
+          <!-- ── Icon ── -->
+          <div class="success-icon">
+            <svg viewBox="0 0 24 24"><polyline points="20,6 9,17 4,12"/></svg>
+          </div>
+
+          <!-- ── Title — outcome-first, no ambiguity ── -->
+          <div class="success-title">You're protected.</div>
+          <div style="font-size:0.8rem;color:var(--text-muted);margin-top:0.2rem;margin-bottom:0;font-family:var(--font-mono);letter-spacing:0.02em;">Next Tuesday, 6:47 AM — they hit a wall, not your statement.</div>
+          <div style="font-size:0.9rem;color:var(--text-muted);margin-top:0.25rem;margin-bottom:0.75rem;line-height:1.5;">
+            Bots stop here. Fees stop here.
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:8px;background:rgba(99,179,237,0.05);border:1px solid rgba(99,179,237,0.15);border-radius:var(--radius-sm);padding:0.6rem 0.85rem;margin-bottom:1.25rem;text-align:left;">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#63b3ed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px;opacity:0.85;"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+            <span style="font-size:0.75rem;color:#64748b;line-height:1.55;">Pro access activates within 2–3 minutes. If your dashboard still shows Starter after 5 minutes, <a href="https://t.me/ChargeGuardd" target="_blank" rel="noopener" style="color:#63b3ed;text-decoration:none;border-bottom:1px solid rgba(99,179,237,0.3);">message Amr on Telegram</a> — he'll fix it immediately.</span>
+          </div>
+
+          <!-- ── Buyer's Remorse Prevention — Festinger 1957 ──
+               Reconnects the purchase to the outcome immediately.
+               "Every bot" makes the value feel ongoing, not one-time. ── -->
+          <div style="background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.15);border-radius:var(--radius-md);padding:0.875rem 1rem;margin-bottom:1.25rem;text-align:left;">
+            <div style="font-size:0.82rem;color:#6ee7b7;line-height:1.65;">
+              Every bot that hits your store from this moment hits a wall.<br>
+              The next card testing attempt you'll see is the one ChargeGuard already blocked.
+            </div>
+          </div>
+
+          <!-- ── Early Supporter Block ──
+               Temporal Landmark Effect (Hershfield et al., 2011, JCR):
+               a named date anchors the purchase as a meaningful "new beginning"
+               in long-term memory — reduces buyer's remorse & raises perceived value.
+
+               IKEA Effect (Norton, Mochon & Ariely, 2012, JCP):
+               giving the user a personal identifier (Shield ID) activates
+               ownership — they now have something that belongs to them,
+               not just a service they subscribed to.
+
+               Social Identity Theory (Tajfel & Turner, 1979):
+               "Early Supporter" label creates group membership — users who
+               identify as part of a group churn at lower rates.
+
+               JS populates: #success-shield-date and #success-shield-id
+               via showSuccess(tenantEmail, sessionId) — called on PayPal approve.
+          ── -->
+          <div class="supporter-block" id="supporter-block">
+            <div class="supporter-badge">
+              <span class="supporter-badge-dot" aria-hidden="true"></span>
+              Early Supporter
+            </div>
+            <div class="shield-timestamp" id="success-shield-date">
+              Your shield is active
+            </div>
+            <div class="shield-id-row">
+              <span class="shield-id-tag">Shield ID</span>
+              <span class="shield-id-value" id="success-shield-id">CG-ACTIVE</span>
+              <span style="font-size:0.68rem;color:var(--text-muted);font-family:var(--font-mono);">· Pro</span>
+            </div>
+          </div>
+
+          <!-- ── Receipt ── -->
+          <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:1.5rem;display:flex;align-items:center;gap:6px;justify-content:center;flex-wrap:wrap;">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
+            </svg>
+            Receipt on its way to
+            <span class="success-email-highlight" id="success-email" style="font-size:0.82rem;"></span>
+          </div>
+
+          <!-- ── Divider ── -->
+          <div style="height:1px;background:var(--border);margin-bottom:1.25rem;"></div>
+
+          <!-- ── Next Steps — Ovsiankina Completion Drive ──
+               3 steps gives the brain a clear path to closure.
+               Step 2 references the dashboard that already exists at
+               /api/dashboard/page — accessible via the WooCommerce plugin. ── -->
+          <div style="text-align:left;margin-bottom:1.5rem;">
+            <div style="font-family:var(--font-mono);font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.875rem;">
+              What happens now
+            </div>
+
+            <!-- Step 1 -->
+            <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:0.75rem;">
+              <div style="flex-shrink:0;width:22px;height:22px;background:var(--orange);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:0.68rem;font-weight:700;color:white;margin-top:1px;">1</div>
+              <div style="font-size:0.82rem;color:var(--text-body);line-height:1.55;">
+                <strong style="color:var(--text-primary);">Your API key already has Pro access</strong> —
+                no changes needed in your plugin settings. The upgrade is live.
+              </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:0.75rem;">
+              <div style="flex-shrink:0;width:22px;height:22px;background:var(--orange);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:0.68rem;font-weight:700;color:white;margin-top:1px;">2</div>
+              <div style="font-size:0.82rem;color:var(--text-body);line-height:1.55;">
+                <strong style="color:var(--text-primary);">Open your dashboard now</strong> —
+                go to <em style="color:var(--text-primary);">WooCommerce → Settings → ChargeGuard</em>. Your Pro security score, live threat feed, and BIN intelligence are already running.
+                <span style="display:inline-flex;align-items:center;gap:4px;margin-top:0.45rem;display:block;">
+                  <span style="display:inline-flex;align-items:center;gap:5px;font-size:0.78rem;color:var(--orange);font-family:var(--font-mono);">
+                    <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+                    WooCommerce → Settings → ChargeGuard
+                  </span>
+                </span>
+              </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div style="display:flex;align-items:flex-start;gap:10px;">
+              <div style="flex-shrink:0;width:22px;height:22px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:0.68rem;font-weight:700;color:white;margin-top:1px;">✓</div>
+              <div style="font-size:0.82rem;color:var(--text-body);line-height:1.55;">
+                <strong style="color:var(--text-primary);">You're done.</strong>
+                ChargeGuard is running. Your store is protected right now.
+              </div>
+            </div>
+          </div>
+
+          <!-- ── Divider ── -->
+          <div style="height:1px;background:var(--border);margin-bottom:1.25rem;"></div>
+
+          <!-- ── Expectation Bridge — Samuel Hulick (UserOnboard, 2022) + Pendo Benchmarks 2022 ──
+               Purpose: close the Expectation Vacuum that causes 60%+ of Month-1 churn
+               in security SaaS. Both outcomes (activity / silence) reframed as proof of protection.
+               Placement: after steps (what to do) — now answers "what will I see."
+               Color: info-blue (not success-green / warning-amber) — signals explanation, not alert.
+          ── -->
+          <div style="background:rgba(99,179,237,0.04);border:1px solid rgba(99,179,237,0.14);border-radius:var(--radius-md);padding:1rem 1.1rem;margin-bottom:1.25rem;text-align:left;">
+
+            <!-- Header -->
+            <div style="display:flex;align-items:center;gap:7px;margin-bottom:0.875rem;">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#63b3ed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;opacity:0.85;" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>
+              </svg>
+              <span style="font-family:var(--font-mono);font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;color:#63b3ed;opacity:0.9;">What you'll see in your dashboard</span>
+            </div>
+
+            <!-- Scenario A — Silence (most common, most misunderstood) -->
+            <!-- Green because silence = success for a security product -->
+            <div style="background:rgba(16,185,129,0.05);border:1px solid rgba(16,185,129,0.18);border-radius:var(--radius-sm);padding:0.75rem 0.9rem;margin-bottom:0.6rem;">
+              <div style="display:flex;align-items:flex-start;gap:8px;">
+                <div style="flex-shrink:0;width:18px;height:18px;background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.25);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-top:1px;">
+                  <svg viewBox="0 0 24 24" width="9" height="9" fill="none" stroke="var(--green)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9,12 11,14 15,10"/></svg>
+                </div>
+                <div>
+                  <div style="font-size:0.78rem;font-weight:600;color:var(--text-primary);margin-bottom:0.2rem;line-height:1.3;">Zero blocked attempts — this is the best outcome.</div>
+                  <div style="font-size:0.75rem;color:var(--text-muted);line-height:1.55;">No bot has found your store yet, or they probed it and moved on. ChargeGuard is running — silence is what protection looks like from the inside.</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Scenario B — Activity (less common, but reassuring when it happens) -->
+            <!-- Orange because it's the brand active state, not a warning -->
+            <div style="background:rgba(249,115,22,0.04);border:1px solid rgba(249,115,22,0.15);border-radius:var(--radius-sm);padding:0.75rem 0.9rem;">
+              <div style="display:flex;align-items:flex-start;gap:8px;">
+                <div style="flex-shrink:0;width:18px;height:18px;background:rgba(249,115,22,0.1);border:1px solid rgba(249,115,22,0.22);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-top:1px;">
+                  <svg viewBox="0 0 24 24" width="9" height="9" fill="none" stroke="var(--orange)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>
+                </div>
+                <div>
+                  <div style="font-size:0.78rem;font-weight:600;color:var(--text-primary);margin-bottom:0.2rem;line-height:1.3;">Blocked attempts in your log — this means it's working.</div>
+                  <div style="font-size:0.75rem;color:var(--text-muted);line-height:1.55;">A bot tested your store and was stopped before attempt three — before Stripe saw a single request. Each blocked entry is a fee that didn't happen.</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Closing line — unifies both outcomes -->
+            <div style="margin-top:0.75rem;padding-top:0.65rem;border-top:1px solid rgba(99,179,237,0.1);font-size:0.72rem;color:var(--text-muted);line-height:1.55;text-align:center;">
+              Either way, you'll know — and either way, your store is covered.
+            </div>
+
+          </div>
+          <!-- ── END Expectation Bridge ── -->
+
+          <!-- ── Safety Net — Cialdini: accessibility of founder = trust ── -->
+          <div style="margin-bottom:1.25rem;">
+            <a href="https://t.me/ChargeGuardd" target="_blank" rel="noopener"
+               style="display:inline-flex;align-items:center;gap:7px;font-size:0.78rem;color:var(--text-muted);text-decoration:none;transition:color 0.2s;"
+               onmouseover="this.style.color='var(--orange)'"
+               onmouseout="this.style.color='var(--text-muted)'">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;opacity:0.7;">
+                <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+              </svg>
+              Something feel off? <strong style="color:var(--orange);font-weight:500;margin-left:3px;">Amr on Telegram — typically within the hour</strong>
+            </a>
+          </div>
+
+          <!-- ── Community Share Moment ──
+               Timing rationale (Jonah Berger, "Contagious", 2013):
+               immediate post-purchase referral in B2B is weak when framed
+               as "tell a friend about us" — but strong when framed as
+               altruistic help to someone with a known problem.
+
+               Peak-End Rule (Kahneman, 1999): people remember the LAST
+               moment of an experience most vividly. Placing this at the end
+               makes "I helped someone" the final emotional memory of
+               this checkout — not "I just spent money."
+
+               Cialdini Commitment & Consistency (1984): users who share
+               identify publicly as ChargeGuard advocates — raising
+               their own likelihood of staying subscribed.
+
+               Design decision: link opens index.html in a NEW tab so
+               the user's success state remains open and uninterrupted.
+               No tracking pixel. No forced sharing. Just a suggestion.
+          ── -->
+          <div style="margin-bottom:1.1rem;padding:0.8rem 0.9rem;background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:var(--radius-sm);text-align:left;">
+            <div style="font-size:0.72rem;font-weight:600;color:var(--text-muted);letter-spacing:0.05em;text-transform:uppercase;font-family:var(--font-mono);margin-bottom:0.45rem;">
+              After your first blocked attack — tell them.
+            </div>
+            <p style="font-size:0.78rem;color:var(--text-muted);line-height:1.6;margin-bottom:0.6rem;">
+              The first time you open your log and see a blocked attempt — you'll know exactly who needs to see this. Send them the link then. That's when it lands.
+            </p>
+            <a href="index.html" target="_blank" rel="noopener"
+               style="display:inline-flex;align-items:center;gap:5px;font-size:0.78rem;color:var(--text-muted);text-decoration:none;border-bottom:1px solid rgba(255,255,255,0.1);padding-bottom:1px;transition:color 0.2s,border-color 0.2s;"
+               onmouseover="this.style.color='var(--text-primary)';this.style.borderColor='rgba(255,255,255,0.25)'"
+               onmouseout="this.style.color='var(--text-muted)';this.style.borderColor='rgba(255,255,255,0.1)'">
+              <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16,6 12,2 8,6"/><line x1="12" y1="2" x2="12" y2="15"/>
+              </svg>
+              Send them this when it happens →
+            </a>
+          </div>
+
+          <!-- ── Exit — user controls when they leave ── -->
+          <a href="index.html" style="display:inline-flex;align-items:center;gap:6px;font-size:0.8rem;color:var(--text-muted);text-decoration:none;transition:color 0.2s;padding:0.4rem 0;"
+             onmouseover="this.style.color='var(--text-primary)'"
+             onmouseout="this.style.color='var(--text-muted)'">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 12H5M12 5l-7 7 7 7"/>
+            </svg>
+            Back to ChargeGuard
+          </a>
+
+        </div>
+
+        <!-- Error state (session invalid / expired / network) -->
+        <div class="error-state" id="error-state" role="alert" aria-live="assertive">
+          <div class="error-icon">⚠️</div>
+          <div class="error-title" id="error-title">Something went wrong</div>
+          <div class="error-body" id="error-body">We couldn't load your checkout session.</div>
+          <a href="index.html#pricing" class="btn-back">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+            Back to pricing
+          </a>
+        </div>
+
+        <!-- Money-back guarantee — hesitation zone (between CTA and trust badges) -->
+        <!-- Placement: Baymard 2021 — trust signal must be in direct CTA proximity -->
+        <!-- Copy: mirrors index.html + upgrade.html — Mere Exposure Effect (Zajonc 1968) -->
+        <div class="refund-guarantee" id="refund-guarantee" style="display:none;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9,12 11,14 15,10"/></svg>
+          Not satisfied? <strong>One email. Full refund. No questions.</strong> Within 30 days.
+        </div>
+
+        <!-- Security badges (always visible unless error/success take over) -->
+        <div class="security-badges" id="security-badges">
+          <div class="security-badge-item">
+            <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Secured by PayPal
+          </div>
+          <div class="badge-sep"></div>
+          <div class="security-badge-item">
+            <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            256-bit encryption
+          </div>
+          <div class="badge-sep"></div>
+          <div class="security-badge-item">
+            <svg viewBox="0 0 24 24"><polyline points="9,11 12,14 22,4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+            Cancel anytime
+          </div>
+        </div>
+
+      <!-- payment security note — fogg 2003: specificity > generic claims -->
+        <!-- "never sees" stronger than "doesn't store" — describes the mechanism -->
+        <div class="payment-note" id="payment-note">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="3" y="11" width="18" height="11" rx="2"/>
+            <path d="m7 11v7a5 5 0 0110 0v4"/>
+          </svg>
+          your card goes directly to paypal — chargeguard never sees or stores it.
+        </div>
+
+      </div><!-- /payment-card -->
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="page-footer">
+    <span class="footer-copy">© 2026 ChargeGuard. All rights reserved.</span>
+    <div class="footer-links">
+      <a href="privacy.html">Privacy</a>
+      <a href="terms.html">Terms</a>
+    </div>
+  </footer>
+
+  <script>
+  (function () {
+    'use strict';
+
+    // ══════════════════════════════════════════════════════════════════
+    // CONFIG
+    // ══════════════════════════════════════════════════════════════════
+    const API_BASE      = 'https://chargeguard-api.onrender.com';
+    const SESSION_URL   = API_BASE + '/api/payments/checkout-session/';
+    const PAYPAL_CLIENT_ID = 'Ac0zGcuUyM_0yth7z_sXlPse5MR8mWgMbpwzayLhhBO0nQ85s-IhCvGwn7NkG8sDbTxeL2p-2d5hstUM'; // Live — Production
+    const FETCH_TIMEOUT = 35000; // 35 S — COVERS RENDER FREE TIER COLD START
+
+    // ══════════════════════════════════════════════════════════════════
+    // READ ?session= FROM URL
+    // ══════════════════════════════════════════════════════════════════
+    const params    = new URLSearchParams(window.location.search);
+    const sessionId = params.get('session');
+
+    // ══════════════════════════════════════════════════════════════════
+    // DOM REFS
+    // ══════════════════════════════════════════════════════════════════
+    const skeletonBlock      = document.getElementById('skeleton-block');
+    const paypalContainer    = document.getElementById('paypal-button-container');
+    const processingOverlay  = document.getElementById('processing-overlay');
+    const successState       = document.getElementById('success-state');
+    const errorState         = document.getElementById('error-state');
+    const errorTitle         = document.getElementById('error-title');
+    const errorBody          = document.getElementById('error-body');
+    const paymentSub         = document.getElementById('payment-sub');
+    const summaryPlanName    = document.getElementById('summary-plan-name');
+    const summaryBody        = document.getElementById('summary-body');
+    const successEmail       = document.getElementById('success-email');
+    const successBody        = document.getElementById('success-body');
+    const securityBadges     = document.getElementById('security-badges');
+    const paymentNote        = document.getElementById('payment-note');
+    const refundGuarantee    = document.getElementById('refund-guarantee');
+
+    // ── Plan features map (mirrors backend PLAN_CONFIG labels) ──────
+    const PLAN_FEATURES = {
+      pro_monthly:    ['5,000 attacks blocked / month','BIN intelligence & IP blacklist','Email + Slack / Discord alerts','30-day full refund — one email, no forms'],
+      pro_annual:     ['5,000 attacks blocked / month','BIN intelligence & IP blacklist','Email + Slack / Discord alerts','30-day full refund — one email, no forms'],
+      agency_monthly: ['Up to 5 WooCommerce stores','Unlimited attacks across all stores','Unified multi-store dashboard','Everything in Pro'],
+      agency_annual:  ['Up to 5 WooCommerce stores','Unlimited attacks across all stores','Unified multi-store dashboard','Everything in Pro'],
+    };
+
+    // ══════════════════════════════════════════════════════════════════
+    // HELPERS
+    // ══════════════════════════════════════════════════════════════════
+    function fetchWithTimeout(url) {
+      const ctrl = new AbortController();
+      const tid  = setTimeout(function () { ctrl.abort(); }, FETCH_TIMEOUT);
+      return fetch(url, { signal: ctrl.signal })
+        .finally(function () { clearTimeout(tid); });
+    }
+
+    function showError(title, body) {
+      skeletonBlock.style.display   = 'none';
+      paypalContainer.style.display = 'none';
+      processingOverlay.classList.remove('visible');
+      successState.classList.remove('visible');
+      errorTitle.textContent = title;
+      errorBody.innerHTML    = body;
+      errorState.classList.add('visible');
+      securityBadges.style.display = 'none';
+      if (paymentNote) paymentNote.style.display = 'none';
+      paymentSub.textContent = '';
+    }
+
+    // ── showSuccess(tenantEmail, sessionId) ──────────────────────────────
+    // Called on PayPal onApprove → after capture resolves successfully.
+    //
+    // sessionId added as second param (was unused before) to:
+    // 1. Generate a deterministic Shield ID from the real session UUID
+    //    (CG- prefix + first 6 hex chars uppercased → e.g. "CG-A8F3B2")
+    //    Gives the user a unique, real identifier — not a made-up number.
+    //    Hershfield et al. (2011): a named, personal timestamp anchors
+    //    the purchase as a Temporal Landmark in long-term memory.
+    //
+    // 2. Render today's date as "Month DD, YYYY" in the Early Supporter block.
+    //    Locale: en-US — consistent regardless of browser locale settings.
+    //    Fallback: empty string (block still renders without a date).
+    //
+    // All DOM refs (successEmail, successState, etc.) remain in outer closure.
+    // No breaking changes to existing callers — sessionId is optional param.
+    function showSuccess(tenantEmail, sessionId) {
+      skeletonBlock.style.display   = 'none';
+      paypalContainer.style.display = 'none';
+      processingOverlay.classList.remove('visible');
+      errorState.classList.remove('visible');
+      securityBadges.style.display  = 'none';
+      if (paymentNote)      paymentNote.style.display      = 'none';
+      if (refundGuarantee)  refundGuarantee.style.display  = 'none';
+
+      // ── Recipient email ──────────────────────────────────────────────
+      successEmail.textContent = tenantEmail || '';
+
+      // ── Early Supporter: Protection Timestamp ────────────────────────
+      // Temporal Landmark Effect (Hershfield et al., 2011, JCR):
+      // "Your shield has been active since June 13, 2026" anchors the
+      // moment of protection in episodic memory — named dates are
+      // retrieved with ~3× higher accuracy than "today" or "recently."
+      const shieldDateEl = document.getElementById('success-shield-date');
+      if (shieldDateEl) {
+        try {
+          const dateStr = new Date().toLocaleDateString('en-US', {
+            year:  'numeric',
+            month: 'long',
+            day:   'numeric',
+          });
+          shieldDateEl.textContent = 'Your shield has been active since ' + dateStr;
+        } catch (_) {
+          shieldDateEl.textContent = 'Your shield is now active';
+        }
+      }
+
+      // ── Early Supporter: Shield ID from real sessionId ───────────────
+      // Deterministic — same sessionId always produces same Shield ID.
+      // Not a serial number (we don't expose user count) but a real,
+      // unique, personal identifier that belongs to this transaction.
+      // Fallback: 'CG-ACTIVE' if sessionId is absent or malformed.
+      const shieldIdEl = document.getElementById('success-shield-id');
+      if (shieldIdEl) {
+        try {
+          const raw = (sessionId || '').replace(/-/g, '');
+          const id  = raw.length >= 6
+            ? 'CG-' + raw.slice(0, 6).toUpperCase()
+            : 'CG-ACTIVE';
+          shieldIdEl.textContent = id;
+        } catch (_) {
+          shieldIdEl.textContent = 'CG-ACTIVE';
+        }
+      }
+
+      // ── Reveal success state ─────────────────────────────────────────
+      successState.classList.add('visible');
+      successState.classList.add('fade-in');
+      paymentSub.textContent = '';
+      // No redirect — success state is the destination.
+      // User exits on their own terms when they're ready.
+    }
+
+    // ══════════════════════════════════════════════════════════════════
+    // RENDER ORDER SUMMARY once session data is available
+    // ══════════════════════════════════════════════════════════════════
+    function renderSummary(session) {
+      // Plan name
+      summaryPlanName.textContent = session.planLabel || 'Shield Pro';
+      document.title = 'Checkout — ' + (session.planLabel || 'ChargeGuard');
+
+      // Build amount display
+      const isAnnual  = session.billingCycle === 'annual';
+      const amount    = Number(session.amount);
+      const amountFmt = '$' + amount.toFixed(2);
+
+      // Monthly equivalent for annual plans
+      let sub  = isAnnual ? '/year' : '/month';
+      let save = '';
+
+      if (isAnnual) {
+        const monthly = (amount / 12).toFixed(2);
+        sub  = '/year  (≈ $' + monthly + '/mo)';
+        // Compute savings vs monthly equivalent
+        const planKey = session.planId || '';
+        const monthlyCost = planKey.startsWith('pro') ? 19 : 49;
+        const annualIfMonthly = monthlyCost * 12;
+        const saved = annualIfMonthly - amount;
+        if (saved > 0) {
+          save = 'You save $' + saved.toFixed(0) + ' vs monthly';
+        }
+      }
+
+      // Build features list
+      const features = PLAN_FEATURES[session.planId] || [];
+      const featureLis = features.map(function (f) {
+        return '<li style="display:flex;align-items:flex-start;gap:9px;font-size:0.82rem;color:var(--text-body);margin-bottom:0.45rem;">' +
+          '<span class="feat-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>' +
+          f + '</li>';
+      }).join('');
+
+      summaryBody.innerHTML =
+        '<div class="amount-row">' +
+          '<div><div class="amount-label">Total today</div></div>' +
+          '<div style="text-align:right;">' +
+            '<div class="amount-value">' + amountFmt + '</div>' +
+            '<div class="amount-price-sub amount-sub">' + sub + '</div>' +
+            (save ? '<div class="amount-save">' + save + '</div>' : '') +
+          '</div>' +
+        '</div>' +
+        '<div class="divider"></div>' +
+        // Account row
+        '<div class="account-row">' +
+          '<svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9,12 11,14 15,10"/></svg>' +
+          '<div class="account-row-inner">' +
+            '<div class="account-row-label">Upgrading account</div>' +
+            '<div class="account-row-email">' + (session.tenantEmail || '') + '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="divider"></div>' +
+        '<ul class="summary-features">' + featureLis + '</ul>' +
+        '<div class="cancel-note">' +
+          '<svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9,12 11,14 15,10"/></svg>' +
+          'Cancel anytime from your dashboard. No questions asked.' +
+        '</div>';
+    }
+
+    // ══════════════════════════════════════════════════════════════════
+    // LOAD PAYPAL SDK DYNAMICALLY
+    // Safe: client-id is a public identifier (not a secret)
+    // ══════════════════════════════════════════════════════════════════
+    function loadPayPalSDK() {
+      return new Promise(function (resolve, reject) {
+        // ── Guard: already loaded and functional ─────────────────────
+        // Checks .Buttons existence — guards against ad blocker stubbing
+        // (window.paypal exists but .Buttons is undefined/non-functional)
+        if (window.paypal && window.paypal.Buttons) { resolve(window.paypal); return; }
+
+        // ── Settled flag — prevents double-resolution ─────────────────
+        // onload, onerror, and timeout all call resolve/reject exactly once.
+        // Without this flag, a race between timeout and onerror could
+        // call reject() twice — causing an unhandled promise rejection.
+        var settled   = false;
+
+        // ── 12-second timeout — catches silent script removal ─────────
+        // Ad blockers like Brave (Type 2) remove the script from the DOM
+        // after injection without firing onerror. Without a timeout,
+        // the skeleton spins indefinitely with no user-facing message.
+        // 12s chosen: longer than worst-case slow connection (8-9s),
+        // shorter than user patience threshold (~15s per Nielsen, 1993).
+        var timeoutId = setTimeout(function () {
+          if (settled) return;
+          settled = true;
+          reject(new Error('PAYPAL_TIMEOUT'));
+        }, 12000);
+
+        var script    = document.createElement('script');
+        script.src    = 'https://www.paypal.com/sdk/js?client-id=' + PAYPAL_CLIENT_ID + '&currency=USD&intent=capture';
+        script.async  = true;
+
+        script.onload = function () {
+          if (settled) return;
+          settled = true;
+          clearTimeout(timeoutId);
+          // ── Guard against Type 3 stubbing ─────────────────────────
+          // Some privacy extensions let the script load but replace
+          // window.paypal with an empty object. .Buttons check catches this.
+          if (window.paypal && window.paypal.Buttons) {
+            resolve(window.paypal);
+          } else {
+            reject(new Error('PAYPAL_STUB'));
+          }
+        };
+
+        script.onerror = function () {
+          if (settled) return;
+          settled = true;
+          clearTimeout(timeoutId);
+          reject(new Error('PAYPAL_LOAD_ERROR'));
+        };
+
+        document.head.appendChild(script);
+      });
+    }
+
+    // ══════════════════════════════════════════════════════════════════
+    // RENDER PAYPAL BUTTON
+    // session object is captured in closure — amount never comes from URL
+    // ══════════════════════════════════════════════════════════════════
+    function renderPayPalButton(session, paypal) {
+      paypal.Buttons({
+
+        style: {
+          layout:  'vertical',
+          color:   'blue',
+          shape:   'rect',
+          label:   'pay',
+          height:  48,
+        },
+
+        // ── Create Order ──────────────────────────────────────────────
+        // Amount comes from session object fetched from backend.
+        // session.sessionId is custom_id — the webhook uses it to find
+        // and verify the session on the server side.
+        createOrder: function (data, actions) {
+          return actions.order.create({
+            purchase_units: [{
+              amount: {
+                value:         Number(session.amount).toFixed(2),
+                currency_code: 'USD',
+              },
+              description:   session.planLabel + ' — ChargeGuard',
+              custom_id:     session.sessionId,   // ← webhook link
+            }],
+            application_context: {
+              brand_name:          'ChargeGuard',
+              shipping_preference: 'NO_SHIPPING',
+              user_action:         'PAY_NOW',
+            },
+          });
+        },
+
+        // ── On Approve (buyer approved in PayPal popup) ───────────────
+        // We capture the order client-side. The REAL activation happens
+        // server-side via webhook. This is just a UX confirmation step.
+        onApprove: function (data, actions) {
+          // Hide button, show processing
+          paypalContainer.style.display = 'none';
+          processingOverlay.classList.add('visible');
+          securityBadges.style.display  = 'none';
+          if (refundGuarantee) refundGuarantee.style.display = 'none';
+          if (paymentNote)     paymentNote.style.display     = 'none';
+          paymentSub.textContent = '';
+
+          return actions.order.capture().then(function (details) {
+            // Show success — webhook will activate the subscription async
+            processingOverlay.classList.remove('visible');
+            // Pass sessionId as second arg → used to render Shield ID
+            // in the Early Supporter block. session is in outer closure.
+            showSuccess(session.tenantEmail, session.sessionId);
+          }).catch(function (err) {
+            processingOverlay.classList.remove('visible');
+            showError(
+              'Capture failed',
+              'Your payment was approved but we couldn\'t confirm it. ' +
+              'Please check your email — if payment was taken, your account will activate within minutes. ' +
+              'Contact <a href="mailto:support@chargeguard.io" style="color:#fca5a5;">support@chargeguard.io</a> if needed.'
+            );
+          });
+        },
+
+        // ── On Error ─────────────────────────────────────────────────
+        onError: function (err) {
+          console.error('PayPal error:', err);
+          paypalContainer.style.display = 'none';
+          showError(
+            'Payment error',
+            'Something went wrong with PayPal. Please try again or ' +
+            '<a href="index.html#pricing" style="color:#fca5a5;">go back to pricing</a>.'
+          );
+        },
+
+        // ── On Cancel ────────────────────────────────────────────────
+        onCancel: function () {
+          // User closed PayPal popup — restore all elements silently
+          paypalContainer.style.display = 'block';
+          paymentSub.textContent = 'One click with PayPal — your store is protected the moment it goes through.';
+          securityBadges.style.display = 'flex';
+          if (refundGuarantee) refundGuarantee.style.display = 'flex';
+          if (paymentNote)     paymentNote.style.display     = 'flex';
+        },
+
+      }).render('#paypal-button-container');
+    }
+
+    // ══════════════════════════════════════════════════════════════════
+    // MAIN INIT — fetch session then load PayPal
+    // ══════════════════════════════════════════════════════════════════
+    async function init() {
+
+      // ── Guard: session param must exist ─────────────────────────────
+      if (!sessionId) {
+        showError(
+          'Invalid checkout link',
+          'This checkout link is missing a session identifier. ' +
+          'Please <a href="index.html#pricing" style="color:#fca5a5;">return to pricing</a> and try again.'
+        );
+        return;
+      }
+
+      // ── Fetch session from backend ───────────────────────────────────
+      // Progressive feedback during session fetch — Maister (1985)
+      const _pgC1 = setTimeout(() => { if (paymentSub) paymentSub.textContent = 'Connecting to ChargeGuard servers…'; }, 4000);
+      const _pgC2 = setTimeout(() => { if (paymentSub) paymentSub.textContent = 'Almost there — our server may be waking up…'; }, 12000);
+      const _pgC3 = setTimeout(() => { if (paymentSub) paymentSub.textContent = 'Still loading — this can take up to 30 seconds on first load. Hang tight.'; }, 22000);
+      function _clearCheckoutPg() { [_pgC1, _pgC2, _pgC3].forEach(clearTimeout); }
+
+      let session;
+      try {
+        const res  = await fetchWithTimeout(SESSION_URL + encodeURIComponent(sessionId));
+        const data = await res.json();
+
+        // ── 404: Session not found ───────────────────────────────────
+        _clearCheckoutPg();
+        if (res.status === 404) {
+          showError(
+            'Checkout link not found',
+            'This checkout link is invalid or has already expired. ' +
+            'Please <a href="index.html#pricing" style="color:#fca5a5;">return to pricing</a> and select your plan again.'
+          );
+          return;
+        }
+
+        // ── 410: Session expired ─────────────────────────────────────
+        if (res.status === 410) {
+          if (data.status === 'completed') {
+            showError(
+              'Already purchased',
+              'This checkout session has already been completed. ' +
+              'Check your email for your receipt, then open <strong style="color:#fca5a5;">WooCommerce → Settings → ChargeGuard</strong> in your store — your Pro access is already active. ' +
+              'Questions? <a href="https://t.me/ChargeGuardd" target="_blank" rel="noopener" style="color:#fca5a5;">Message Amr on Telegram</a>.'
+            );
+          } else {
+            showError(
+              'Session expired',
+              'This checkout session expired (sessions last 30 minutes). ' +
+              'Please <a href="index.html#pricing" style="color:#fca5a5;">return to pricing</a> to get a fresh link.'
+            );
+          }
+          return;
+        }
+
+        // ── Other errors ─────────────────────────────────────────────
+        if (!res.ok) {
+          showError(
+            'Could not load checkout',
+            'We encountered an error loading your checkout. Please try again, or ' +
+            '<a href="index.html#pricing" style="color:#fca5a5;">return to pricing</a>.'
+          );
+          return;
+        }
+
+        session = data;
+
+      } catch (err) {
+        _clearCheckoutPg();
+        if (err.name === 'AbortError') {
+          showError('Request timed out', 'Our server may have been asleep — please reload the page and it should respond immediately.');
+        } else {
+          showError('Network error', 'Could not reach ChargeGuard. Check your connection and reload the page.');
+        }
+        return;
+      }
+
+      _clearCheckoutPg();
+      // ── Render order summary ────────────────────────────────────────
+      renderSummary(session);
+      paymentSub.textContent = 'One click with PayPal — your store is protected the moment it goes through.';
+
+      // ── Load PayPal SDK ──────────────────────────────────────────────
+      let paypal;
+      try {
+        paypal = await loadPayPalSDK();
+      } catch (err) {
+        // ── Distinguish between ad blocker block and genuine network error ──
+        // PAYPAL_TIMEOUT + PAYPAL_STUB = almost certainly an ad blocker.
+        // PAYPAL_LOAD_ERROR = network failure, DNS, or connection issue.
+        // Two different root causes → two different user-facing messages.
+        // Blaming "your connection" when the real cause is an ad blocker
+        // is a trust-eroding false attribution — Cialdini (1984).
+        var isBlocker = err.message === 'PAYPAL_TIMEOUT' || err.message === 'PAYPAL_STUB';
+        if (isBlocker) {
+          showError(
+            'Payment blocked by browser extension',
+            'An ad blocker or privacy extension is preventing PayPal from loading. ' +
+            'To complete your upgrade:<br><br>' +
+            '1. Disable your ad blocker for this page and reload, <strong>or</strong><br>' +
+            '2. Open this page in a private / incognito window, <strong>or</strong><br>' +
+            '3. Try a different browser (Chrome or Firefox without extensions).<br><br>' +
+            'Your account is ready — this is only a payment page issue. ' +
+            '<a href="https://t.me/ChargeGuardd" target="_blank" rel="noopener" style="color:#fca5a5;">Message Amr on Telegram</a> if you need help.'
+          );
+        } else {
+          showError(
+            'Payment system unavailable',
+            'We couldn\'t load the payment system. Please check your connection and reload the page, ' +
+            'or <a href="https://t.me/ChargeGuardd" target="_blank" rel="noopener" style="color:#fca5a5;">message Amr on Telegram</a> to complete your upgrade manually.'
+          );
+        }
+        return;
+      }
+
+      // ── Reveal PayPal button ────────────────────────────────────────
+      skeletonBlock.style.display   = 'none';
+      paypalContainer.style.display = 'block';
+      paypalContainer.classList.add('fade-in');
+
+      // ── Reveal refund guarantee in hesitation zone ──────────────────
+      // Appears with PayPal button — not before (would seem detached from CTA)
+      // Baymard 2021: trust signal must be in direct proximity to the payment action
+      const refundGuarantee = document.getElementById('refund-guarantee');
+      if (refundGuarantee) refundGuarantee.style.display = 'flex';
+
+      renderPayPalButton(session, paypal);
+    }
+
+    // Boot
+    init();
+
+  })();
+  </script>
+
+</body>
+</html>

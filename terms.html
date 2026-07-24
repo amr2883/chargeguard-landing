@@ -8,7 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --orange: #f97316;
+  --orange: #16120f;
   --bg: #0b1121;
   --card: #111827;
   --border: rgba(255,255,255,0.07);
@@ -51,7 +51,7 @@ nav {
 .page-label::before { content: ''; display: block; width: 24px; height: 1px; background: var(--orange); }
 h1 { font-family: var(--font-display); font-size: clamp(1.8rem,4vw,2.4rem); font-weight: 700; color: var(--text-primary); letter-spacing: -0.025em; margin-bottom: 0.5rem; }
 .effective { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 3rem; }
-.section { margin-bottom: 2.5rem; padding-bottom: 2.5rem; border-bottom: 1px solid var(--border); }
+.section { margin-bottom: 2.5rem; padding-bottom: 2.5rem; border-bottom: 1px solid var(--border); scroll-margin-top: 80px; }
 .section:last-of-type { border-bottom: none; }
 h2 { font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1rem; display: flex; align-items: center; gap: 10px; }
 h2 .num { font-size: 0.72rem; font-family: monospace; color: var(--orange); background: rgba(249,115,22,0.1); border: 1px solid rgba(249,115,22,0.2); padding: 2px 8px; border-radius: 100px; }
@@ -78,6 +78,42 @@ footer { text-align: center; padding: 2rem; font-size: 0.8rem; color: var(--text
   <h1>Terms of Service</h1>
   <p class="effective">Effective Date: May 9, 2026 · Last updated: May 9, 2026</p>
 
+  <div class="highlight" style="margin-bottom:2rem;">
+    <p style="font-size:0.875rem; color:#f1f5f9; font-weight:500; margin-bottom:0.5rem;">Before the legal language: what actually matters to you</p>
+    <p style="margin-bottom:0.5rem;">The <strong style="color:#f1f5f9;">30-day Performance Guarantee</strong> is real and binding — one email and one screenshot from your logs is the entire process. No forms. No investigation. <a href="#guarantee-terms" style="color:#f97316;">Jump to Section 11 to read it in full →</a></p>
+    <p style="margin-bottom:0.5rem;">The <strong style="color:#f1f5f9;">Starter plan is free forever</strong> — no credit card, no expiry, no required upgrade.</p>
+    <p style="margin-bottom:0;">If anything here doesn't match what you expected from the landing page, email <a href="mailto:support@chargeguard.io" style="color:#f97316;">support@chargeguard.io</a> — we wrote these terms ourselves and we'll explain anything directly.</p>
+  </div>
+
+  <div style="
+    border-left: 3px solid rgba(249,115,22,0.5);
+    padding: 1rem 1.25rem;
+    margin-bottom: 2rem;
+    background: rgba(249,115,22,0.03);
+    border-radius: 0 8px 8px 0;
+  ">
+    <p style="font-size:0.9rem; color:var(--text); margin-bottom:0.6rem; line-height:1.7;">These terms are written to be readable, not weaponized. If anything here confuses you or doesn't match what you expected, email us — we wrote this ourselves and we'll explain anything directly.</p>
+    <p style="font-size:0.8rem; color:var(--text-muted); font-family:monospace; letter-spacing:0.03em; margin-bottom:0;">— Amr, founder · <a href="mailto:support@chargeguard.io" style="color:var(--orange);">support@chargeguard.io</a></p>
+  </div>
+
+  <div style="
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    border-left: 3px solid rgba(249,115,22,0.6);
+    background: rgba(249,115,22,0.04);
+    border-radius: 0 10px 10px 0;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 2rem;
+  " aria-label="Plain-English summary of key terms">
+    <p style="font-size:0.72rem; font-family:monospace; letter-spacing:0.1em; text-transform:uppercase; color:#f97316; margin-bottom:0.25rem;">What this means for you — in plain English</p>
+    <div style="display:flex; flex-direction:column; gap:0.65rem;">
+      <p style="font-size:0.9rem; color:#cbd5e1; margin:0; line-height:1.65;"><strong style="color:#f1f5f9;">The Starter plan is free forever.</strong> No credit card, no expiry date, no required upgrade — ever. If you stay on Starter, you'll never be charged. If you hit the 500-attack monthly limit, ChargeGuard will block further fraud evaluations for the rest of that calendar month and show an upgrade prompt — it will not silently fail open. Protection resumes automatically on the 1st of the next calendar month with no action needed, or you can upgrade to Pro at any time to restore coverage immediately, with no automatic charges until you confirm.</p>
+      <p style="font-size:0.9rem; color:#cbd5e1; margin:0; line-height:1.65;"><strong style="color:#f1f5f9;">The 30-day money-back guarantee is real and binding.</strong> If card testing gets through on a paid plan, email us with one screenshot from your logs. That's the entire process — no forms, no investigation, no back-and-forth. We refund every cent within 5 business days. <a href="#guarantee-terms" style="color:#f97316;">See the full terms in Section 11 →</a></p>
+      <p style="font-size:0.9rem; color:#cbd5e1; margin:0; line-height:1.65;"><strong style="color:#f1f5f9;">You can cancel or downgrade anytime, with no penalty.</strong> Cancellation takes effect at the end of your current billing period — no cancellation fees, no questions asked. Downgrading to the free Starter plan is always available.</p>
+    </div>
+  </div>
+
   <div class="section">
     <h2><span class="num">01</span> Agreement to Terms</h2>
     <p>By accessing or using ChargeGuard ("Service", "we", "us"), you agree to be bound by these Terms of Service. If you do not agree, do not use the Service.</p>
@@ -102,21 +138,23 @@ footer { text-align: center; padding: 2rem; font-size: 0.8rem; color: var(--text
   </div>
 
   <div class="section">
-    <h2><span class="num">04</span> Acceptable Use</h2>
-    <p>You agree to use the Service only for its intended purpose — protecting WooCommerce stores from card testing fraud. You must not:</p>
+    <h2><span class="num">04</span> How ChargeGuard Is Designed to Be Used</h2>
+    <p>ChargeGuard is built to do one thing: protect WooCommerce stores from card testing attacks. The way it works — analyzing checkout behavior signals, not storing or processing payment card data — means it's designed for a specific purpose, and using it outside that purpose conflicts with how the Service is built and maintained.</p>
+    <p>Specifically, the following uses fall outside what ChargeGuard is designed to support:</p>
     <ul>
-      <li>Use the Service to process or store payment card data</li>
-      <li>Attempt to reverse-engineer, scrape, or abuse the API</li>
-      <li>Resell or sublicense the Service without written permission</li>
-      <li>Use the Service in violation of any applicable law or regulation</li>
-      <li>Deliberately send fraudulent or misleading signals to the API</li>
+      <li><strong style="color:var(--text-primary);">Processing or storing payment card data.</strong> ChargeGuard analyzes checkout signals — IP patterns, velocity, BIN behavior — not card numbers. It isn't built or authorized for card data custody, and handling raw card data through the Service would create PCI compliance exposure for your store.</li>
+      <li><strong style="color:var(--text-primary);">Reverse-engineering, scraping, or stress-testing the API.</strong> The detection model that protects your store also protects every other store on the network. Its integrity is a shared resource, and actions that probe or replicate its internals put that resource at risk for everyone.</li>
+      <li><strong style="color:var(--text-primary);">Reselling or sublicensing access without written permission.</strong> Each API key is scoped to the store and plan it was issued for. If you manage multiple stores or client sites, the Agency plan is designed for that — reselling individual access outside that structure undermines the service quality every user depends on.</li>
+      <li><strong style="color:var(--text-primary);">Using the Service in violation of applicable law or regulation.</strong> ChargeGuard is intended for legitimate fraud prevention. Use that conflicts with the laws governing your store or jurisdiction falls outside what we can support.</li>
+      <li><strong style="color:var(--text-primary);">Deliberately sending fraudulent or misleading signals to the detection API.</strong> The network's accuracy — including the protection your store receives — depends on clean signal data from every user. Intentionally corrupting that data harms every store on the platform, and we treat this as a serious violation of these Terms.</li>
     </ul>
   </div>
 
   <div class="section">
-    <h2><span class="num">05</span> Early Access & Pricing</h2>
-    <p>During the Early Access period, the first 10 accepted stores receive 3 months of full protection at no cost. After the Early Access period, continued use is subject to the pricing in effect at that time ($29/month per store).</p>
-    <p>We will provide at least 30 days' notice before any billing begins. You may cancel at any time before billing commences with no obligation.</p>
+    <h2><span class="num">05</span> Pricing & Billing</h2>
+    <p>ChargeGuard offers three plans: Shield Starter, which is free forever and includes up to 500 blocked attacks per month with no credit card required; Shield Pro, at $19/month or $159/year, which includes up to 5,000 blocked attacks per month; and Shield Agency, at $49/month or $399/year, which includes unlimited blocked attacks across up to 5 stores.</p>
+    <p>The Starter plan has no time limit and no required upgrade. You may use it indefinitely at no cost.</p>
+    <p>If you choose to upgrade to a paid plan, we will provide at least 30 days' notice before any billing begins. You may cancel at any time before billing commences with no obligation, and you may downgrade to the Starter plan or cancel a paid plan at any time thereafter with no cancellation fees.</p>
   </div>
 
   <div class="section">
@@ -127,24 +165,26 @@ footer { text-align: center; padding: 2rem; font-size: 0.8rem; color: var(--text
 
   <div class="section">
     <h2><span class="num">07</span> Disclaimer of Warranties</h2>
-    <p>The Service is provided <strong style="color:var(--text-primary);">"as is"</strong> and <strong style="color:var(--text-primary);">"as available"</strong> without warranties of any kind, express or implied. ChargeGuard does not warrant that:</p>
+    <p>We back ChargeGuard with a specific, binding commitment: the Performance Guarantee described in Section 11. If card testing attacks get through on your store despite the plugin being correctly installed and configured, you're entitled to a full refund of your subscription fee under the terms set out there.</p>
+    <p>We make that commitment because we're confident in the technology — not because we believe any security tool can promise perfection. Fraud detection is probabilistic by nature, and no product, including ours, can guarantee it will catch every attack with zero exceptions. The Service is provided <strong style="color:var(--text-primary);">"as is"</strong> and <strong style="color:var(--text-primary);">"as available,"</strong> and beyond the specific guarantee in Section 11, we do not warrant that:</p>
     <ul>
       <li>The Service will detect or prevent every card testing attack</li>
       <li>The Service will be error-free or uninterrupted</li>
       <li>Any specific fraud detection accuracy rate will be maintained</li>
     </ul>
-    <p>Fraud detection is probabilistic by nature. ChargeGuard significantly reduces fraud risk but cannot guarantee complete elimination.</p>
+    <p>In short: we won't claim the technology is flawless, because no honest security company would. But we will put our money behind it. That's what Section 11 is for.</p>
   </div>
 
   <div class="section">
     <h2><span class="num">08</span> Limitation of Liability</h2>
-    <p>To the maximum extent permitted by applicable law, ChargeGuard and its team members shall not be liable for any indirect, incidental, special, consequential, or punitive damages, including but not limited to:</p>
+    <p>The Performance Guarantee in Section 11 is not affected by this section. If ChargeGuard fails to block card testing attacks under the terms of that guarantee, you're entitled to a full refund of your subscription fee — not a capped or partial amount. Everything below governs claims outside that guarantee.</p>
+    <p>For all other matters, to the maximum extent permitted by applicable law, ChargeGuard and its team members shall not be liable for indirect, incidental, special, consequential, or punitive damages, including but not limited to:</p>
     <ul>
-      <li>Lost revenue or gateway fees from attacks that bypassed the Service</li>
       <li>Business interruption or loss of data</li>
       <li>Costs of substitute services</li>
+      <li>Lost revenue not covered by the Performance Guarantee</li>
     </ul>
-    <p>Our total aggregate liability to you shall not exceed the amount you paid for the Service in the 3 months preceding the claim, or $50, whichever is greater.</p>
+    <p>This general limitation exists to keep ChargeGuard affordable for solo store owners — without it, we'd need to price for worst-case, open-ended exposure rather than the actual risk we're built to manage. Outside of the Performance Guarantee, our total aggregate liability for any other claim is limited to the amount you paid for the Service in the 3 months preceding that claim.</p>
   </div>
 
   <div class="section">
@@ -158,14 +198,85 @@ footer { text-align: center; padding: 2rem; font-size: 0.8rem; color: var(--text
     <p>We may update these Terms from time to time. We will notify registered users by email at least 14 days before material changes take effect. Continued use of the Service after changes constitutes acceptance of the new Terms.</p>
   </div>
 
+  <div class="section" id="guarantee-terms">
+    <span id="guarantee" style="display:block;height:0;overflow:hidden;" aria-hidden="true"></span>
+    <h2><span class="num">11</span> Performance Guarantee</h2>
+    <p>ChargeGuard Pro and Agency subscribers are covered by this guarantee for as long as their paid subscription is active.</p>
+    <div class="highlight">
+      If fraudulent card-testing activity gets through that ChargeGuard didn't block, you can request a full refund of your most recent subscription payment.
+    </div>
+    <p><strong style="color:var(--text-primary);">What counts as a failure:</strong> Any fraudulent card-testing activity our dashboard didn't catch — whether it reached your payment gateway, generated fees, or simply shows up in your store's order or gateway logs as activity ChargeGuard didn't block. You don't need to prove a specific attack pattern, reconstruct the full timeline, or meet any technical threshold. If something got through and your logs show it, that's enough.</p>
+    <p><strong style="color:var(--text-primary);">How to claim:</strong> Email <a href="mailto:support@chargeguard.io">support@chargeguard.io</a> within 30 days of noticing the failure, from the email address on your account. One screenshot or a quick export from your WooCommerce order log or gateway dashboard is all we need to process it — no investigation, no back-and-forth. The ChargeGuard plugin must have been installed and active on your store at the time. No forms, no investigation process on your end — we'll review it and respond within 5 business days.</p>
+    <p>This guarantee covers Pro and Agency plans. The free Starter plan isn't a paid subscription, so it isn't part of this guarantee — but it's also free, so there's nothing to refund.</p>
+    <p>This guarantee does not limit your rights under applicable consumer protection law. It is offered in addition to, not in place of, any statutory rights you may have.</p>
+  </div>
+
   <div class="section">
-    <h2><span class="num">11</span> Contact</h2>
-    <p>For questions about these Terms, contact us at: <a href="mailto:support@chargeguard.io">support@chargeguard.io</a></p>
+    <h2><span class="num">12</span> Contact</h2>
+    <p>For questions about these Terms, email us at <a href="mailto:support@chargeguard.io">support@chargeguard.io</a> — we read and respond to every message ourselves.</p>
+    <p>For something urgent, or if you just want to talk to a real person quickly, message us directly on Telegram at <a href="https://t.me/ChargeGuardd" target="_blank" rel="noopener">@ChargeGuardd</a>. It's not a ticket queue — it's us.</p>
   </div>
 
   <a href="index.html" class="back">← Back to ChargeGuard</a>
 </div>
 
-<footer>© 2026 ChargeGuard. All rights reserved.</footer>
+<footer>
+  <div style="display:flex;justify-content:center;align-items:center;gap:1.25rem;flex-wrap:wrap;">
+    <span>© 2026 ChargeGuard. All rights reserved.</span>
+    <a href="privacy.html" style="color:var(--text-muted);text-decoration:none;font-size:0.8rem;">Privacy</a>
+    <a href="terms.html" style="color:var(--text-muted);text-decoration:none;font-size:0.8rem;">Terms</a>
+  </div>
+</footer>
+<a id="guarantee-jump-btn" href="#guarantee-terms" style="
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  background: rgba(249,115,22,0.9);
+  color: #fff;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 0.55rem 1rem;
+  border-radius: 100px;
+  text-decoration: none;
+  box-shadow: 0 4px 16px rgba(249,115,22,0.3);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 999;
+  white-space: nowrap;
+" aria-label="Jump to the 30-day Performance Guarantee section">
+  → See Guarantee
+</a>
+
+<script>
+(function() {
+  var btn = document.getElementById('guarantee-jump-btn');
+  var guaranteeSection = document.getElementById('guarantee-terms');
+  if (!btn || !guaranteeSection) return;
+
+  // Show button after user scrolls past the summary box (approx 300px)
+  // Hide button once guarantee section enters viewport
+  var scrollThreshold = 300;
+
+  function updateBtn() {
+    var scrollY = window.scrollY || window.pageYOffset;
+    var rect = guaranteeSection.getBoundingClientRect();
+    var inView = rect.top < window.innerHeight && rect.bottom > 0;
+
+    if (scrollY > scrollThreshold && !inView) {
+      btn.style.opacity = '1';
+      btn.style.pointerEvents = 'auto';
+    } else {
+      btn.style.opacity = '0';
+      btn.style.pointerEvents = 'none';
+    }
+  }
+
+  window.addEventListener('scroll', updateBtn, { passive: true });
+  updateBtn(); // run once on load
+})();
+</script>
+
 </body>
 </html>
