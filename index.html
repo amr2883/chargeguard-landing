@@ -3447,22 +3447,17 @@
 
                 // Progressive feedback — covers Render free tier cold start
                 // Unoccupied + uncertain + unexplained waits feel longest (Maister, 1985)
-                const _pgMsg1 = setTimeout(() => showMessage('Verifying your details…', 'info'), 3000);
-                const _pgMsg2 = setTimeout(() => showMessage('Connecting to ChargeGuard servers…', 'info'), 8000);
-                const _pgMsg3 = setTimeout(() => showMessage('Almost there — our server may be waking up after a quiet period…', 'info'), 15000);
-                const _pgMsg4 = setTimeout(() => showMessage('Still connecting — this can take up to 30 seconds on first load. Hang tight.', 'info'), 22000);
-                // Store refs on controller so clearTimeout works on all exit paths
-                controller._pgTimers = [_pgMsg1, _pgMsg2, _pgMsg3, _pgMsg4];
+       const controller = new AbortController();
+const timeoutId  = setTimeout(
+    () => controller.abort(),
+    FETCH_TIMEOUT_MS
+);
 
-                // ── AbortController — cancels the fetch after FETCH_TIMEOUT_MS ────
-                // controller.signal is passed to fetch(); calling controller.abort()
-                // rejects the promise with an AbortError, caught below.
-                // timeoutId is cleared on every exit path so it never fires stale.
-                const controller = new AbortController();
-                const timeoutId  = setTimeout(
-                    () => controller.abort(),
-                    FETCH_TIMEOUT_MS
-                );
+const _pgMsg1 = setTimeout(() => showMessage('Verifying your details…', 'info'), 3000);
+const _pgMsg2 = setTimeout(() => showMessage('Connecting to ChargeGuard servers…', 'info'), 8000);
+const _pgMsg3 = setTimeout(() => showMessage('Almost there — our server may be waking up after a quiet period…', 'info'), 15000);
+const _pgMsg4 = setTimeout(() => showMessage('Still connecting — this can take up to 30 seconds on first load. Hang tight.', 'info'), 22000);
+controller._pgTimers = [_pgMsg1, _pgMsg2, _pgMsg3, _pgMsg4];
 
                 try {
                     // Read Turnstile token — set by Cloudflare widget automatically
