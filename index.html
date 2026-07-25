@@ -84,7 +84,15 @@
          FONTS
     ═══════════════════════════════════════════════ -->
     <!-- Cloudflare Turnstile — invisible bot protection for registration form -->
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+<script>
+    window.onTurnstileSuccess = function(token) {
+        window._turnstileToken = token;
+    };
+    window.onTurnstileError = function(errorCode) {
+        console.error('[Turnstile] Error:', errorCode);
+    };
+</script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3162,8 +3170,8 @@
             <div class="reveal" style="transition-delay:0.15s;">
                 <div class="form-card" id="register-card">
                     <div class="form-card-header">
-                        <div class="form-card-title">Activate Your Shield</div>
-                        <div class="form-card-sub">Paste this key into WooCommerce and the wall goes up — before the next attempt, not after.</div>
+                      <div class="form-card-title">Confirm Your Email to Activate</div>
+<div class="form-card-sub">We've sent a confirmation link to your inbox. Click it first — your API key won't activate protection until your email is verified.</div>
                     </div>
 
                     <form id="register-form">
@@ -3180,11 +3188,13 @@
                         </div>
                         <!-- Turnstile widget — invisible to real users, lethal to bots -->
                         <div class="cf-turnstile"
-                             data-sitekey="0x4AAAAAADN9Zgc_f4OR2xVx"
-                             data-theme="dark"
-                             data-size="flexible"
-                             style="margin-bottom:0.75rem;">
-                        </div>
+     data-sitekey="0x4AAAAAADN9Zgc_f4OR2xVx"
+     data-theme="dark"
+     data-size="flexible"
+     data-callback="onTurnstileSuccess"
+     data-error-callback="onTurnstileError"
+     style="margin-bottom:0.75rem;">
+</div>
 
                         <button type="submit" class="form-submit" id="submit-btn">
                             <svg viewBox="0 0 24 24">
@@ -3204,7 +3214,7 @@
                                 <path d="M8 1L2 3.5v4C2 11 5 13.9 8 15c3-1.1 6-4 6-7.5v-4L8 1z"/>
                                 <line x1="8" y1="6" x2="8" y2="8"/><circle cx="8" cy="10.5" r="0.5" fill="#f87171"/>
                             </svg>
-                            <span><strong style="color:#fca5a5;">Never share this key.</strong> It grants full access to your store's protection — treat it like a password.</span>
+                            <span><strong style="color:#fca5a5;">This key won't work yet.</strong> Confirm your email first — then paste this key into WooCommerce. Never share it; it grants full access to your store's protection.</span>
                         </div>
 
                         <!-- Key box + copy button -->
@@ -3229,8 +3239,12 @@
 
                         <div class="result-label" style="margin-top:1.5rem;">Next Steps</div>
                         <ol class="steps-list" role="list">
-                           <li>
-    <div class="step-num">1</div>
+                            <li>
+                                <div class="step-num">1</div>
+                                <span><strong style="color:var(--text-primary);">Confirm your email</strong> — Check your inbox and click the confirmation link. Your key won't work until you do this.</span>
+                            </li>
+                            <li>
+    <div class="step-num">2</div>
     <span>
         <strong style="color:var(--text-primary);">Install the plugin</strong> — 
         <a id="plugin-download-link" href="https://github.com/amr2883/chargeguard-plugin/releases/latest/download/chargeguard.zip" download style="color:var(--orange); text-decoration:underline; text-underline-offset:3px;">Download the plugin (v1.0.4)</a> 
@@ -3238,11 +3252,11 @@
     </span>
 </li>
                             <li>
-                                <div class="step-num">2</div>
+                                <div class="step-num">3</div>
                                 <span><strong style="color:var(--text-primary);">Activate & configure</strong> — Go to <em>WooCommerce → Settings → ChargeGuard</em> and paste your key above.</span>
                             </li>
                             <li>
-                                <div class="step-num">3</div>
+                                <div class="step-num">4</div>
                                 <span><strong style="color:var(--text-primary);">The wall is up.</strong> — The firewall is active. The next attempt hits it, not your gateway.</span>
                             </li>
                         </ol>
@@ -3321,6 +3335,25 @@
     <script>
         (function() {
             const API_REGISTER_URL = 'https://chargeguard-api.onrender.com/api/risk/tenants/register';
+
+            // Poll for the Turnstile response token if the success callback
+            // hasn't populated window._turnstileToken yet (max ~2s wait).
+            function ensureTurnstileToken() {
+                return new Promise(function(resolve, reject) {
+                    if (window._turnstileToken) return resolve(window._turnstileToken);
+                    let attempts = 0;
+                    const check = setInterval(function() {
+                        const input = document.querySelector('input[name="cf-turnstile-response"]');
+                        if (window._turnstileToken || (input && input.value)) {
+                            clearInterval(check);
+                            resolve(window._turnstileToken || input.value);
+                        } else if (++attempts > 20) { // ~2s max
+                            clearInterval(check);
+                            reject(new Error('Turnstile timeout'));
+                        }
+                    }, 100);
+                });
+            }
 
             // ════════════════════════════════════════════════════════════════════════
             // FETCH TIMEOUT — 15 seconds
@@ -3460,22 +3493,23 @@ const _pgMsg4 = setTimeout(() => showMessage('Still connecting — this can take
 controller._pgTimers = [_pgMsg1, _pgMsg2, _pgMsg3, _pgMsg4];
 
                 try {
-                    // Read Turnstile token — set by Cloudflare widget automatically
-                    const turnstileInput = document.querySelector(
-                        'input[name="cf-turnstile-response"]'
-                    );
-                    const turnstileToken = turnstileInput?.value || '';
-
-                    // Block submission if token is missing — widget not loaded yet
-                    if (!turnstileToken) {
-                        showMessage(
-                            'Security check not ready yet — please wait a moment and try again.',
-                            'error'
-                        );
-                        resetButton();
-                        clearTimeout(timeoutId);
-                        return;
-                    }
+                    // Prefer the callback-captured token; fall back to polling the hidden input
+                  // Prefer the callback-captured token; fall back to polling the hidden
+// input for up to 2s in case the callback hasn't fired yet.
+let turnstileToken = window._turnstileToken || '';
+if (!turnstileToken) {
+    try {
+        turnstileToken = await ensureTurnstileToken();
+    } catch (_) {
+        showMessage(
+            'Security check not ready yet — please refresh and try again.',
+            'error'
+        );
+        resetButton();
+        clearTimeout(timeoutId);
+        return;
+    }
+}
 
                     const response = await fetch(API_REGISTER_URL, {
                         method:  'POST',
