@@ -3176,7 +3176,7 @@
 
                     <form id="register-form">
                     <div style="opacity:0;position:absolute;top:0;left:0;height:0;width:0;z-index:-1;overflow:hidden;" aria-hidden="true">
-                        <input type="text" name="website" tabindex="-1" autocomplete="off">
+                        <input type="text" name="cg_x92fq" id="cg_x92fq" tabindex="-1" autocomplete="off">
                     </div>
                         <div class="form-group">
                             <label for="email">Email address <span class="req">*</span></label>
@@ -3451,7 +3451,8 @@
                 // Honeypot check — bots fill hidden fields, humans don't
                 // Optional chaining (?.) guards against null if DOM parsing
                 // fails or the element is removed — prevents TypeError crash
-                if (document.querySelector('input[name="website"]')?.value) return;
+                const honeypotField = document.querySelector('input[name="cg_x92fQ"]');
+                if (honeypotField && honeypotField.value.trim() !== '') return;
                 hideMessage();
                 resultEl.style.display = 'none';
 
